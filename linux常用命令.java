@@ -128,7 +128,7 @@ Linux查看进程的4种方法{
 
 第二种：ps -elf  ps axms  // 大部分跟第一种一样，PPID为父进程的PID。
 
-第三种：top
+第三种：top   top -Hp PID  //详细
 
 第四种：pstree -aup 可以带上|grep  查询特定进程。例如 pstree -aup | grep php
  
