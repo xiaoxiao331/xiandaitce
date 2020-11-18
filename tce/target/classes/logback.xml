@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Console Log -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%-5level %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger[%method:%line] - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="consoleForLoginInterceptor" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%-5level %d{yyyy-MM-dd HH:mm:ss} %logger[%method:%line] - %msg%n</pattern>
+        </encoder>
+    </appender>
+ 
+    <!-- File Log 
+    <appender name="file" class="ch.qos.logback.core.FileAppender">
+        <file>D:\log\testFile.log</file>
+        <encoder>
+            <pattern>%-5level %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger[%method:%line] - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+    -->
+    
+    <!-- Log Print Package -->
+    <logger name="org.springframework" level="info" />
+   
+    <logger name="org.apache.commons.digester" level="info" />
+   
+    <logger name="able" level="debug" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+     
+    <logger name="egovframework" level="debug" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+
+    <root level="debug">
+        <appender-ref ref="console" />
+        <!-- <appender-ref ref="file" /> -->
+    </root>
+</configuration>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+	SQL File Name : tce_CommonDAO_SQL.xml
+	Description : Common SQL
+
+	Modification Information 
+	   수정일	 수정자	 Version	  Query Id
+	==========  ==========  =========   ==============
+	2019.05.22.            	   1.0		최초 생성 
+-->
+<mapper namespace="tce.com.service.dao.CommonDAO">
+	<!-- 사용자 목록 조회 (팝업) -->
+	<select id="selectUserListPopup" parameterType="commonVO" resultType="commonVO">
+		SELECT	T2.*
+		FROM	(
+			SELECT	ROWNUM AS rowCnt,
+					T1.*
+			FROM	(
+				SELECT  KD.CID AS gCid,
+						KD.USER_NM AS gUserNm,
+						KD.PHONE_NUM AS gPhoneNum,
+						COUNT(*) OVER() AS totCnt
+				FROM	KPME_DVC kd, KPME_VTK kv
+				WHERE   KD.CID = KV.CID
+				AND KD.DVC_ID = KV.DVC_ID
+				<if test="gCid != null and gCid != ''">
+					AND KD.CID = #{gCid}
+				</if>
+				<if test="gUserNm != null and gUserNm != ''">
+					AND KD.USER_NM LIKE '%'||#{gUserNm}||'%'
+				</if>
+				<if test="gPhoneNum != null and gPhoneNum != ''">
+					AND KD.PHONE_NUM = REPLACE(#{gPhoneNum},'-','')
+				</if>
+				GROUP BY KD.CID, KD.USER_NM, KD.PHONE_NUM
+			) T1
+		) T2
+		<![CDATA[
+		WHERE	rowCnt > (#{pageKey}-1) * #{rowsPerPage}
+		AND ROWNUM <= #{rowsPerPage}
+		]]>
+	</select>
+</mapper>

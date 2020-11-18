@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : tce_NotiMgrDAO_SQL.xml
+    Description : Login Manager SQL
+
+    Modification Information 
+       수정일      수정자    Version      Query Id
+    ==========  =======  ========   ==============
+    2019.04.23             1.0         최초 생성 
+-->
+<mapper namespace="tce.setting.service.dao.UserDAO"> 
+    <!-- Select User Info List -->
+    <select id="selectUserList" parameterType="userVO" resultType="userVO">
+        <include refid="sql.ref.pagingHeader"/>
+            SELECT A.USER_ID            AS userId,    
+                   A.AUTH_ID            AS authId, 
+                   B.AUTH_NM            AS authNm,  
+                   A.USER_GUBUN         AS userGubun,     
+                   A.USER_PW            AS userPw,                
+                   A.USER_PW_FAIL_CNT   AS userPwFailCnt,    
+                   A.USER_NM            AS userNm,                
+                   A.USER_MOBILE        AS userMobile,            
+                   A.USER_PHONE         AS userPhone,          
+                   A.USER_EML_ADDR      AS userEmlAddr,     
+                   A.USER_LAST_LGI_POT  AS userLastLgiPot,  
+                   A.USER_USE_YN        AS userUseYn,         
+                   A.USER_SID           AS userSid,          
+                   TO_CHAR(A.EXPR_MDFY_POT, 'YYYY-MM-DD')   AS exprMdfyPot,    
+                   TO_CHAR(A.ACCT_START_DATE, 'YYYY-MM-DD') AS acctStartDate,     
+                   TO_CHAR(A.ACCT_END_DATE, 'YYYY-MM-DD')   AS acctEndDate,     
+                   A.FRST_ID AS frstId,                
+                   A.FRST_DT AS frstDt,                
+                   A.LAST_ID AS lastId,                
+                   A.LAST_DT AS lastDt   
+              FROM TC_MONITORING_USER_MGMT A, TC_MONITORING_AUTH_MGMT B
+             WHERE A.AUTH_ID = B.AUTH_ID
+            <if test="searchVal01 != null and searchVal01 != ''">
+               AND A.USER_ID = #{searchVal01}
+            </if>
+            <if test="searchVal02 != null and searchVal02 != ''">
+               AND A.USER_NM like '%'||#{searchVal02}||'%'
+            </if>
+            <if test="searchVal03 != null and searchVal03 != ''">
+               AND A.AUTH_ID = #{searchVal03}
+            </if>
+            <if test="searchVal04 != null and searchVal04 != ''">
+               AND A.USER_USE_YN = #{searchVal04}
+            </if>
+            <if test="searchVal05 != null and searchVal05 != ''">
+               AND A.USER_LOCK_YN = #{searchVal05}
+            </if>
+            <if test="userId != null and userId != ''">
+               AND A.USER_ID = #{userId}
+            </if>
+           ORDER BY A.FRST_DT DESC
+       <include refid="sql.ref.pagingFooter"/>
+    </select>
+    
+    <!-- Select User Info List Count -->
+    <select id="selectUserInfoCnt" parameterType="userVO" resultType="Integer">
+        SELECT COUNT(USER_ID) AS CNT  
+          FROM TC_MONITORING_USER_MGMT A, TC_MONITORING_AUTH_MGMT B
+         WHERE A.AUTH_ID = B.AUTH_ID
+        <if test="searchVal01 != null and searchVal01 != ''">
+           AND A.USER_ID = #{searchVal01}
+        </if>
+        <if test="searchVal02 != null and searchVal02 != ''">
+           AND A.USER_NM like '%'||#{searchVal02}||'%'
+        </if>
+        <if test="searchVal03 != null and searchVal03 != ''">
+           AND A.AUTH_ID = #{searchVal03}
+        </if>
+        <if test="searchVal04 != null and searchVal04 != ''">
+           AND A.USER_USE_YN = #{searchVal04}
+        </if>
+        <if test="searchVal05 != null and searchVal05 != ''">
+           AND A.USER_LOCK_YN = #{searchVal05}
+        </if>
+    </select>
+    
+    <!-- Select UserInfo List -->
+    <insert id="insertUserInfo" parameterType="userVO">
+        INSERT INTO TC_MONITORING_USER_MGMT (
+            USER_ID,
+            AUTH_ID,
+            USER_GUBUN,
+            USER_PW,
+            USER_NM,
+            USER_MOBILE,
+            USER_PHONE,
+            USER_EML_ADDR,
+            USER_USE_YN,
+            ACCT_START_DATE,
+            ACCT_END_DATE,
+            FRST_ID,
+            FRST_DT 
+       )VALUES (
+            #{userId},
+            #{authId},
+            #{userGubun},
+            #{userPw},
+            #{userNm},
+            #{userMobile},
+            #{userPhone},
+            #{userEmlAddr},
+            #{userUseYn},
+            TO_DATE(#{acctStartDate}, 'YYYYMMDD'),
+            TO_DATE(#{acctEndDate}||'235959', 'YYYYMMDDHH24MISS'),
+            #{frstId},
+            sysdate 
+        )
+    </insert>
+    
+    <!-- Select UserInfo -->
+    <select id="selectUserInfo" parameterType="userVO" resultType="userVO">
+        SELECT A.USER_ID            AS userId,    
+               A.AUTH_ID            AS authId, 
+               B.AUTH_NM            AS authNm,
+               A.USER_GUBUN         AS userGubun,     
+               A.USER_PW            AS userPw,                
+               A.USER_PW_FAIL_CNT   AS userPwFailCnt,    
+               A.USER_NM            AS userNm,                
+               A.USER_MOBILE        AS userMobile,            
+               A.USER_PHONE         AS userPhone,          
+               A.USER_EML_ADDR      AS userEmlAddr,     
+               A.USER_LAST_LGI_POT  AS userLastLgiPot,  
+               A.USER_USE_YN        AS userUseYn, 
+               A.USER_SID           AS userSid,
+               A.FRST_ID            AS frstId,                
+               A.FRST_DT            AS frstDt,                
+               A.LAST_ID            AS lastId,                
+               A.LAST_DT            AS lastDt,
+               TO_CHAR(A.EXPR_MDFY_POT  , 'YYYYMMDD') AS exprMdfyPot,     
+               TO_CHAR(A.ACCT_START_DATE, 'YYYYMMDD') AS acctStartDate,     
+               TO_CHAR(A.ACCT_END_DATE  , 'YYYYMMDD') AS acctEndDate     
+          FROM TC_MONITORING_USER_MGMT A, TC_MONITORING_AUTH_MGMT B
+         WHERE A.AUTH_ID = B.AUTH_ID
+        <if test="userId != null and userId != ''">
+           AND A.USER_ID = #{userId}
+        </if>
+        <if test="userPw != null and userPw != ''">
+           AND A.USER_PW = #{userPw} AND A.USER_USE_YN = 'Y'
+        </if>
+    </select>
+    
+    <!-- Update User Info -->
+    <update id="updateUserInfo" parameterType="userVO">
+        UPDATE TC_MONITORING_USER_MGMT 
+           SET LAST_DT = SYSDATE
+             , USER_PW_FAIL_CNT = #{userPwFailCnt}
+        <if test="authId != null and authId != ''">
+             , AUTH_ID = #{authId}
+        </if>
+        <if test="userGubun != null and userGubun != ''">
+             , USER_GUBUN = #{userGubun}
+        </if>
+        <if test="userPw != null and userPw != ''">
+             , USER_PW = #{userPw}
+        </if>
+        <if test="userNm != null and userNm != ''">
+             , USER_NM = #{userNm}
+        </if>
+        <if test="userMobile != null and userMobile != ''">
+             , USER_MOBILE = #{userMobile}
+        </if>
+        <if test="userPhone != null and userPhone != ''">
+             , USER_PHONE = #{userPhone}
+        </if>
+        <if test="userEmlAddr != null and userEmlAddr != ''">
+             , USER_EML_ADDR = #{userEmlAddr}
+        </if>
+        <if test="userLastLgiPot != null and userLastLgiPot != ''">
+             , USER_LAST_LGI_POT = sysdate
+        </if>
+        <if test="userUseYn != null and userUseYn != ''">
+             , USER_USE_YN = #{userUseYn}
+        </if>
+        <if test="exprMdfyPot != null and exprMdfyPot != ''">
+             , EXPR_MDFY_POT = TO_DATE(#{exprMdfyPot}||'235959', 'YYYYMMDDHH24MISS')
+        </if>
+        <if test="userSid != null and userSid != ''">
+             , USER_SID = #{userSid}
+        </if>
+        <if test="acctStartDate != null and acctStartDate != ''">
+             , ACCT_START_DATE = TO_DATE(#{acctStartDate}||'000000', 'YYYYMMDDHH24MISS')
+        </if>
+        <if test="acctEndDate != null and acctEndDate != ''">
+             , ACCT_END_DATE = TO_DATE(#{acctEndDate}||'235959', 'YYYYMMDDHH24MISS')
+        </if>
+        <if test="lastId != null and lastId != ''">
+             , LAST_ID = #{lastId}
+        </if>
+       WHERE USER_ID = #{userId}
+    </update>
+    
+    <!-- Update User Password -->
+    <update id="updateUserPasswd" parameterType="userVO">
+        UPDATE TC_MONITORING_USER_MGMT SET
+            USER_PW = #{userPw},
+            USER_PW_FAIL_CNT = 0,
+            USER_USE_YN = 'Y',
+            EXPR_MDFY_POT = sysdate + interval '3' month,
+            LAST_ID = #{lastId},
+            LAST_DT = sysdate 
+        WHERE
+            USER_ID = #{userId} AND USER_PW = #{oldPasswd}
+    </update>
+    
+    <!-- Delete User Info -->
+    <update id="deleteUserInfo" parameterType="userVO">
+        DELETE 
+          FROM TC_MONITORING_USER_MGMT 
+         WHERE USER_ID = #{userId}
+    </update>
+    
+    <update id="updateSession" parameterType="userVO">
+        UPDATE TC_MONITORING_USER_MGMT SET
+            USER_SID = #{userSid},
+            LAST_DT = sysdate
+        WHERE
+            USER_ID = #{userId}
+    </update>
+</mapper>

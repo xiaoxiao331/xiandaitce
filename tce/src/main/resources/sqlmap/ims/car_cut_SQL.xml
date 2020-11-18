@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tce.ims.service.dao.CustomerInformationStatisticsDAO">
+<!-- <resultMap id="carRetailInfoVO" type="tce.ims.vo.CarRetailInfoVO">
+		
+		<result column="RGST_DTM" test="yyyymmdd" jdbcType="VARCHAR" />
+		<result column="SRCSVR_NM" test="corp" jdbcType="VARCHAR" />
+		<result column="SRCSVR_IP" test="carmodel" jdbcType="VARCHAR" />
+		<result column="TGTSVR_NM" test="productCnt" jdbcType="VARCHAR" />
+		<result column="TGTSVR_IP" test="deliveryCnt" jdbcType="VARCHAR" />
+		<result column="TGTSVR_PORT" test="contractCnt" jdbcType="VARCHAR" />
+		<result column="PING_CONTENT" test="openCnt" jdbcType="VARCHAR" />
+		<result column="TELNET_CONTENT" test="provisonCnt" jdbcType="VARCHAR" />
+		<result column="PING_RESULT" test="cancelCnt" jdbcType="VARCHAR" />
+		<result column="TELNET_RESULT" test="totalupCnt" jdbcType="VARCHAR" />
+		<result column="TELNET_RESULT" test="csmcscn" jdbcType="VARCHAR" />
+		<result column="TELNET_RESULT" test="grouping" jdbcType="VARCHAR" />
+		<result column="TELNET_RESULT" test="sumSaleCnt" jdbcType="VARCHAR" />
+		<result column="TELNET_RESULT" test="retailCount" jdbcType="VARCHAR" />
+		<result column="TELNET_RESULT" test="sumOpenCnt" jdbcType="VARCHAR" />
+		<result column="TELNET_RESULT" test="custCNTT" jdbcType="VARCHAR" />
+		<result column="TELNET_RESULT" test="custAllCNTT" jdbcType="VARCHAR" />
+		<result column="TELNET_RESULT" test="saleOpnCNTT" jdbcType="VARCHAR" />
+ </resultMap> -->
+<!--
+             各法人零售开通现况                
+    -->
+ <select id="selectCarRetailInfoStatisticNew" parameterType="tce.ims.vo.CarRetailInfoVO" resultType="carRetailInfoVO">
+	  
+
+        <![CDATA[
+
+	   SELECT 
+
+               CASE 
+
+               WHEN GROUPING_ID(CSMC_SORT,PRDN_VEHL_SORT)= 3
+
+               THEN  MIN(NULL)
+
+               ELSE  MIN(CSMC_SCN)  
+
+               END                             AS csmcScn,
+
+               CASE
+
+               WHEN GROUPING_ID(CSMC_SORT,PRDN_VEHL_SORT)= 1 
+
+               THEN  MIN(NULL)
+
+               WHEN GROUPING_ID(CSMC_SORT,PRDN_VEHL_SORT)= 3 
+
+               THEN  MIN(NULL)
+
+               ELSE  MIN(PRDN_VEHL_CD)  
+
+               END                             AS carmodel,                     
+
+               TO_CHAR(SUM(COL_1),'9,999,999') AS productCnt,
+
+               TO_CHAR(SUM(COL_2),'9,999,999') AS deliveryCnt,
+
+               TO_CHAR(SUM(COL_3),'9,999,999') AS contractCnt,
+
+               TO_CHAR(SUM(COL_4),'9,999,999') AS openCnt,
+
+               TO_CHAR(SUM(COL_5),'9,999,999') AS provisonCnt,
+
+               TO_CHAR(SUM(COL_6),'9,999,999') AS cancelCnt,
+
+               TO_CHAR(SUM(COL_7),'9,999,999') AS totalupCnt,
+
+               TO_CHAR(SUM(COL_8),'9,999,999') AS sumSaleCnt,
+
+               TO_CHAR(SUM(COL_9),'9,999,999') AS sumOpenCnt,
+               
+               TO_CHAR(SUM(COL_0),'9,999,999') AS custCNTT,
+               
+               TO_CHAR(SUM(COL_10),'9,999,999') AS saleOpnCNTT,
+               
+               NVL(round(SUM(COL_10)/SUM(COL_3),2)*100,0)||'%' as custAllCNTT,
+
+               GROUPING_ID(CSMC_SORT,PRDN_VEHL_SORT) AS grouping
+
+        FROM(
+
+        
+
+                 SELECT T.CSMC_SCN
+
+                       ,DECODE(type,'P',CNT) COL_1
+
+                       ,DECODE(type,'D',CNT) COL_2
+
+                       ,DECODE(type,'U',CNT) COL_3
+
+                       ,DECODE(type,'T',CNT) COL_4
+
+                       ,DECODE(type,'S',CNT) COL_5
+
+                       ,DECODE(type,'C',CNT) COL_6
+
+                       ,DECODE(type,'Z',CNT) COL_7
+
+                       ,DECODE(type,'A',CNT) COL_8
+
+                       ,DECODE(type,'N',CNT) COL_9
+                       
+                       ,DECODE(type,'Y',CNT) COL_0
+                       
+                       ,DECODE(type,'W',CNT) COL_10
+                       
+                       ,( SELECT MAX(B.REAL_SALE_VEHL_CD) FROM TB_VEHL_CD B WHERE B.VEHICLE_CD= T.PRDN_VEHL_CD) PRDN_VEHL_CD
+
+                       ,( SELECT MAX(B.SORT_NO) FROM TB_VEHL_CD B WHERE B.VEHICLE_CD=T.PRDN_VEHL_CD)            PRDN_VEHL_SORT
+
+                       ,( SELECT SORT_NO FROM BT_COM_CD WHERE PREN_CD='IM000526' AND COM_CD = T.CSMC_SCN)       CSMC_SORT
+
+                FROM( 
+
+                           /* 생산 */
+
+                        
+
+                            SELECT
+
+                                'P' type, A.CSMC_SCN CSMC_SCN, A.SALE_VEHICLE_CD PRDN_VEHL_CD, COUNT(*) cnt FROM  BT_CAR_PRDN_INFO A 
+
+                            WHERE A.TMS_YN='Y'
+                            AND A.TMS_TYPE in ('1','O')
+
+                             AND A.SGFF_STD_DT  BETWEEN  REPLACE(#{startDate},'-','') AND REPLACE(#{endDate},'-','')
+
+                            AND A.VIN NOT IN (SELECT VIN FROM BT_TEST_VIN WHERE DLRSALE_YN=0)  
+
+                           ]]> 
+                                <if test="tmnlType != null and tmnlType !='' ">
+                                    AND A.TMNL_TYPE = #{tmnlType}
+                                </if>
+                                <if  test="csmcScn != null and csmcScn !='' ">
+                                 AND  A.CSMC_SCN =  #{csmcScn}
+                                </if>
+                           <![CDATA[
+                           
+                            GROUP BY A.CSMC_SCN,A.SALE_VEHICLE_CD
+
+            
+
+                            UNION all
+                        /*  ????(???) 分配量 给经销商的  [CCSC] 2019.09.19 remark changed */
+
+                                SELECT 
+                                    'D' TYPE, A.CSMC_SCN CSMC_SCN, A.PRDN_VEHL_CD PRDN_VEHL_CD, COUNT(*) cnt FROM BT_CAR_MST A, BT_CAR_PRDN_INFO B ,BT_CAR_MST_IF C
+                                        WHERE  DECODE(A.CSMC_SCN,'D',REPLACE(A.PLNT_WHOT_DT,'-',''),'H',REPLACE(A.PLNT_WHOT_DT,'-',''),'K',REPLACE(A.PLNT_WHOT_DT,'-',''),'B',REPLACE(A.CAR_ASG_DT,'-','')) 
+                                        BETWEEN  REPLACE(#{startDate},'-','') AND REPLACE(#{endDate},'-','')
+                                        AND A.VIN NOT IN (SELECT VIN FROM BT_TEST_VIN WHERE DLRSALE_YN=0) 
+                                        AND A.VIN = B.VIN
+                                        AND B.TMS_TYPE in ('1','O')
+                                        AND A.DMS_DLR_CD NOT IN ('A07MA')  /*去除MOFA车辆  20150522 C300614*/
+                                        AND substr(A.Vin,0,11) = C.vin_no1
+                                        AND substr(A.Vin,12) = C.vin_no2
+                                        AND C.Car_St not in ('Q165')
+                                    ]]> 
+                                        <if  test="tmnlType != null and tmnlType !='' ">
+                                        AND B.TMNL_TYPE = #{tmnlType}
+                                        </if>
+                                       <if  test="csmcScn != null and csmcScn !='' ">
+                                        AND  A.CSMC_SCN =  #{csmcScn}
+                                        </if>
+                                        <![CDATA[
+
+                           GROUP BY A.CSMC_SCN, A.PRDN_VEHL_CD
+
+                        UNION all
+                        /* 顾客合同 [CCSC] 2019.09.19 remark changed */
+                         SELECT 
+                                    'Y' type, A.CSMC_SCN  CSMC_SCN, B.PRDN_VEHL_CD PRDN_VEHL_CD, COUNT(*) cnt
+                                FROM
+                                (select a.* from bt_car_cntt a,(
+                            select  max(cntt_no) cntt_no,vin from BT_CAR_CNTT where  cntt_st_cd='8' group by vin
+                                ) b where a.vin=b.vin and a.cntt_no=b.cntt_no
+                                ) A, BT_CAR_MST B, BT_CAR_PRDN_INFO C
+                                WHERE 1=1
+                                AND A.VIN=B.VIN
+                                AND C.TMS_TYPE in ('1','O')
+                                AND A.CNTT_ST_CD ='8'
+                                AND A.CANC_DT IS NULL
+                                AND DECODE(A.CSMC_SCN,'D',REPLACE(A.WHOT_DT,'-',''),'H',REPLACE(A.CNTT_DT,'-',''),'K',REPLACE(A.CNTT_DT,'-',''),'B',REPLACE(A.CNTT_DT,'-','')) 
+                                        BETWEEN  REPLACE(#{startDate},'-','') AND REPLACE(#{endDate},'-','')
+                                AND A.VIN NOT IN (SELECT VIN FROM BT_TEST_VIN WHERE DLRSALE_YN=0)  /*시험 차량 제외*/ 
+                                AND B.VIN = C.VIN
+                                
+                                ]]> 
+                                          <if  test="tmnlType != null and tmnlType !='' ">
+                                            AND C.TMNL_TYPE = #{tmnlType}
+                                           </if>
+                                           <if  test="csmcScn != null and csmcScn !='' " >
+                                            AND  B.CSMC_SCN =  #{csmcScn}
+                                            </if>
+                                        <![CDATA[
+                                                 
+                                GROUP BY A.CSMC_SCN, B.PRDN_VEHL_CD
+
+                           UNION all
+
+            
+
+                            /*  retail infomation 零售信息 [CCSC] 2019.09.19 remark changed */
+
+                                SELECT 
+                                        'U' type,  A.CSMC_SCN  CSMC_SCN, A.PRDN_VEHL_CD PRDN_VEHL_CD, COUNT(*) cnt FROM BT_CAR_MST A, BT_CAR_PRDN_INFO B
+                                            WHERE 1=1
+                                            AND B.TMS_TYPE in ('1','O')
+                                            AND A.VIN=B.VIN
+                                            AND REPLACE(A.CSMR_SALE_DT,'-','')  BETWEEN REPLACE(#{startDate},'-','') AND REPLACE(#{endDate},'-','')
+                                            AND A.VIN NOT IN (SELECT VIN FROM BT_TEST_VIN WHERE DLRSALE_YN=0)  /*시험 차량 제외*/ 
+                                   
+                                     ]]> 
+                                        <if  test="tmnlType != null and tmnlType !='' ">
+                                               AND B.TMNL_TYPE = #{tmnlType}                    
+                                            </if>
+                                             <if  test="csmcScn != null and csmcScn !='' ">
+                                            AND  A.CSMC_SCN =  #{csmcScn}
+                                            </if>
+                                    <![CDATA[     
+                                    GROUP BY A.CSMC_SCN, A.PRDN_VEHL_CD             
+
+            
+
+                           UNION all
+ 
+                        
+                        /*  ?????? 零售信息总和统计 [CCSC] 2019.09.19 remark changed */
+
+                            SELECT 
+                                'A' type, A.CSMC_SCN  CSMC_SCN, A.PRDN_VEHL_CD PRDN_VEHL_CD, COUNT(*) cnt
+                            FROM BT_CAR_MST A, BT_CAR_PRDN_INFO B
+                            WHERE 1=1
+                             AND B.TMS_TYPE in ('1','O')
+                            AND A.VIN=B.VIN
+                            AND REPLACE(A.CSMR_SALE_DT,'-','')  BETWEEN '20120801' AND REPLACE(#{endDate},'-','')
+                            AND A.VIN NOT IN (SELECT VIN FROM BT_TEST_VIN WHERE DLRSALE_YN=0)  /*시험 차량 제외*/ 
+                           
+                           ]]> 
+                                  <if  test="tmnlType != null and tmnlType !='' ">
+                                    AND B.TMNL_TYPE = #{tmnlType}
+                                      </if>
+                                       <if  test="csmcScn != null and csmcScn !='' ">
+                                        AND  A.CSMC_SCN =  #{csmcScn}
+                                        </if>
+                              <![CDATA[
+                                       
+                            GROUP BY A.CSMC_SCN, A.PRDN_VEHL_CD
+
+            
+
+                            UNION all
+
+            
+
+                           /* 망개통 */
+
+                            SELECT 
+
+                                'T' type, B.CSMC_SCN CSMC_SCN, B.PRDN_VEHL_CD PRDN_VEHL_CD, COUNT(*) cnt
+
+                            FROM BT_TMNL_SVC A, BT_CAR_MST B, BT_TMNL_PRDN C
+
+                            WHERE 1=1                              
+
+                            AND A.MEID=B.MEID
+
+                            AND A.MEID=C.MEID
+
+                            AND A.OPNG_PTT_ST_CD IN ('OF','EF')
+
+                            AND A.TMNL_OPNG_DTM  BETWEEN TRUNC(TO_DATE(#{startDate},'YYYY-MM-DD') ) AND TRUNC(TO_DATE(#{endDate},'YYYY-MM-DD')) + 0.99999421
+
+                            AND B.VIN NOT IN (SELECT VIN FROM BT_TEST_VIN WHERE DLRSALE_YN=0)  /*시험 차량 제외*/      
+
+                          ]]> 
+
+                            <if  test="tmnlType != null and tmnlType !='' ">
+
+                                AND C.TMNL_TYPE= #{tmnlType}
+
+                                     </if>
+                                <if  test="csmcScn != null and csmcScn !='' ">
+                                AND  B.CSMC_SCN =  #{csmcScn}
+                                </if>
+                                
+
+                            <![CDATA[            
+
+                            GROUP BY B.CSMC_SCN, B.PRDN_VEHL_CD
+
+            
+
+                            UNION all
+
+            
+
+                           /* 망개통(누적) */
+
+                            SELECT 
+
+                                'N' type, B.CSMC_SCN CSMC_SCN, B.PRDN_VEHL_CD PRDN_VEHL_CD, COUNT(*) cnt
+
+                            FROM BT_TMNL_SVC A, BT_CAR_MST B, BT_TMNL_PRDN C
+
+                            WHERE 1=1 
+                                                      
+
+                            AND A.MEID=B.MEID
+
+                            AND A.MEID=C.MEID
+
+                            AND A.OPNG_PTT_ST_CD IN ('OF','EF')
+
+                            AND A.TMNL_OPNG_DTM  BETWEEN TRUNC(TO_DATE('2012-08-01','YYYY-MM-DD') ) AND TRUNC(TO_DATE(#{endDate},'YYYY-MM-DD')) + 0.99999421
+
+                            AND B.VIN NOT IN (SELECT VIN FROM BT_TEST_VIN WHERE DLRSALE_YN=0)  /*시험 차량 제외*/ historyDate
+
+                             ]]> 
+
+                            <if  test="tmnlType != null and tmnlType !='' ">
+
+                                 AND C.TMNL_TYPE= #{tmnlType}
+                            </if>
+                             <if  test="csmcScn != null and csmcScn !='' ">
+                                AND  B.CSMC_SCN =  #{csmcScn}
+                             </if>
+
+                            <![CDATA[ 
+                                                    
+
+                            GROUP BY B.CSMC_SCN, B.PRDN_VEHL_CD
+
+                            
+
+                            UNION all
+
+                                        
+
+                           /* 서비스가입 */
+
+                            SELECT 
+
+                                'S' type, B.CSMC_SCN CSMC_SCN, B.PRDN_VEHL_CD PRDN_VEHL_CD, COUNT(*) cnt
+
+                            FROM BT_SVC_OPN_MST@ISS_LINK A, BT_CAR_MST B, BT_TMNL_PRDN C,
+
+                                  (SELECT VIN,CONT_SN FROM BT_SVC_RQ_MST@ISS_LINK D WHERE D.SVC_ID='PRV-A' GROUP BY VIN,CONT_SN) PRV
+
+                            WHERE 1=1
+
+                            AND A.VIN=B.VIN
+                            
+
+                            AND A.OPN_ST_CD = 'A'
+
+                            AND A.OPN_DTM  BETWEEN TRUNC(TO_DATE(#{startDate},'YYYY-MM-DD') ) AND TRUNC(TO_DATE(#{endDate},'YYYY-MM-DD')) + 0.99999421
+
+                            AND A.VIN NOT IN (SELECT VIN FROM BT_TEST_VIN WHERE DLRSALE_YN=0)  /*시험 차량 제외*/
+
+                            AND A.VIN = PRV.VIN
+
+                            AND A.CONT_SN = PRV.CONT_SN                              
+
+                            AND B.MEID = C.MEID
+
+                        ]]> 
+
+                            <if  test="tmnlType != null and tmnlType !='' ">
+
+                                AND C.TMNL_TYPE= #{tmnlType}
+
+                                  </if>
+                                  
+                                 <if  test="csmcScn != null and csmcScn !='' ">
+                                AND  B.CSMC_SCN =  #{csmcScn}
+                                </if>
+                                
+
+                            <![CDATA[ 
+
+                            GROUP BY B.CSMC_SCN, B.PRDN_VEHL_CD
+
+            
+
+            
+
+                            UNION all
+
+                            
+
+                           /* 해지 */
+
+                            SELECT
+
+                                'C' type, B.CSMC_SCN CSMC_SCN, B.PRDN_VEHL_CD PRDN_VEHL_CD, COUNT(*) cnt
+
+                            FROM BT_SVC_OPN_MST@ISS_LINK A, BT_CAR_MST B,BT_TMNL_PRDN C          
+
+                            WHERE 1=1
+
+                            AND A.VIN=B.VIN
+                            
+
+                            AND A.OPN_ST_CD = 'C'
+
+                            AND A.TMN_DT  BETWEEN TRUNC(TO_DATE(#{startDate},'YYYY-MM-DD') ) AND TRUNC(TO_DATE(#{endDate},'YYYY-MM-DD')) + 0.99999421
+
+                            AND A.VIN NOT IN (SELECT VIN FROM BT_TEST_VIN WHERE DLRSALE_YN=0) /*시험 차량 제외*/   
+
+                            AND B.MEID = C.MEID
+
+                           
+                            ]]> 
+
+                            <if  test="tmnlType != null and tmnlType !='' ">
+                                AND C.TMNL_TYPE= #{tmnlType}
+
+                                     </if>
+                                     
+                                <if  test="csmcScn != null and csmcScn !='' ">
+                                AND  B.CSMC_SCN =  #{csmcScn}
+                                </if>
+
+                            <![CDATA[
+
+                            GROUP BY B.CSMC_SCN, B.PRDN_VEHL_CD
+
+            
+
+                            UNION all
+
+            
+
+                           /* 누적가입자 */
+                                        
+                SELECT 
+
+                                'Z' type, B.CSMC_SCN CSMC_SCN, B.PRDN_VEHL_CD PRDN_VEHL_CD, COUNT(*) cnt
+
+                            FROM BT_SVC_OPN_MST@ISS_LINK A, BT_CAR_MST B, BT_TMNL_PRDN C,
+
+                                 (SELECT VIN,CONT_SN FROM BT_SVC_RQ_MST@ISS_LINK D WHERE D.SVC_ID='PRV-A' GROUP BY VIN,CONT_SN) PRV
+
+                            WHERE 1=1
+
+                            AND A.VIN=B.VIN                        
+
+                            AND A.OPN_ST_CD = 'A'
+
+                            AND A.OPN_DTM  BETWEEN TRUNC(TO_DATE('2012-08-01','YYYY-MM-DD') ) AND TRUNC(TO_DATE(#{endDate},'YYYY-MM-DD')) + 0.99999421
+
+                            AND A.VIN NOT IN (SELECT VIN FROM BT_TEST_VIN WHERE DLRSALE_YN=0)  /*시험 차량 제외*/ 
+
+                            AND A.VIN = PRV.VIN
+
+                            AND A.CONT_SN = PRV.CONT_SN                                 
+
+                            AND B.MEID = C.MEID
+
+                             ]]> 
+
+                            <if  test="tmnlType != null and tmnlType !='' ">
+                                 AND C.TMNL_TYPE= #{tmnlType}
+                            </if>
+                             <if  test="csmcScn != null and csmcScn !='' ">
+                                AND  B.CSMC_SCN =  #{csmcScn}
+                              </if>
+                                
+
+                            <![CDATA[
+                                                    
+
+                            GROUP BY B.CSMC_SCN, B.PRDN_VEHL_CD 
+                            
+                                  UNION all
+
+                                        
+
+                           /* ????? */
+
+                            SELECT 
+
+                                'W' type, B.CSMC_SCN CSMC_SCN, B.PRDN_VEHL_CD PRDN_VEHL_CD, COUNT(*) cnt
+
+                            FROM BT_SVC_OPN_MST@ISS_LINK A, BT_CAR_MST B, BT_TMNL_PRDN C,
+
+                                  (SELECT VIN,CONT_SN FROM BT_SVC_RQ_MST@ISS_LINK D WHERE D.SVC_ID='PRV-A' GROUP BY VIN,CONT_SN) PRV
+
+                            WHERE 1=1
+
+                            AND A.VIN=B.VIN
+                            
+                            AND A.OPN_ST_CD = 'A'
+
+                            AND REPLACE(B.CSMR_SALE_DT,'-','')  BETWEEN REPLACE(#{startDate},'-','') AND REPLACE(#{endDate},'-','')
+                                                        
+                            AND A.VIN NOT IN (SELECT VIN FROM BT_TEST_VIN WHERE DLRSALE_YN=0)  /*?? ?? ??*/
+
+                            AND A.VIN = PRV.VIN
+
+                            AND A.CONT_SN = PRV.CONT_SN                              
+
+                            AND B.MEID = C.MEID
+
+                                ]]> 
+
+                            <if  test="tmnlType != null and tmnlType !='' ">
+                                 AND C.TMNL_TYPE= #{tmnlType}
+                            </if>
+                             <if  test=" csmcScn != null and csmcScn !='' ">
+                                AND  B.CSMC_SCN =  #{csmcScn}
+                             </if>
+                                
+
+                            <![CDATA[
+
+                            GROUP BY B.CSMC_SCN, B.PRDN_VEHL_CD 
+
+                    ) T  
+
+                    WHERE 1=1
+            )
+             WHERE  PRDN_VEHL_SORT > 0
+
+       GROUP BY ROLLUP(CSMC_SORT, PRDN_VEHL_SORT)
+
+       ORDER BY CSMC_SORT,PRDN_VEHL_SORT  
+
+    ]]>    
+
+       </select>	   
+
+  
+
+		
+
+
+</mapper>
+
+   

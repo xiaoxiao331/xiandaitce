@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:task="http://www.springframework.org/schema/task"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.2.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd">
+    
+    <!-- Digital Key Center(TCE) Properties -->
+    <bean id="tceProperties" class="tce.cmm.TCEProperties">
+        <!-- CONFIG : Default Password -->
+        <property name="defaultPw">
+            <value>Password1!</value>
+        </property>
+        
+        <!-- CONFIG : Default Password -->
+        <!-- <property name="ariaKey">
+            <value>DKC1234</value>
+        </property> -->
+        
+        <!-- CONFIG : Password Fail Count -->
+        <property name="pwFailCnt">
+            <value>5</value>
+        </property>
+        
+        <!-- CONFIG : 로그인 미접속 기간 -->
+        <property name="loginNotDay">
+            <value>90</value>
+        </property>
+        
+        <!-- CONFIG : ISS Server -->
+        <property name="issUrl">
+            <value>http://10.124.253.147:17002</value>
+        </property>
+    </bean>
+    
+    <bean name="propertiesService" class="able.com.service.prop.PropertyServiceImpl" destroy-method="destroy">  
+        <property name="properties">
+            <map>
+                <entry key="pageUnit" value="15"/>
+                <entry key="pageSize" value="15"/>
+            </map>
+        </property>
+    </bean>
+</beans>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+        http://www.springframework.org/schema/jdbc  http://www.springframework.org/schema/jdbc/spring-jdbc-4.2.xsd
+        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
+    
+    <!-- tibero -->   
+    
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.tmax.tibero.jdbc.TbDriver" />
+        <property name="url" value="jdbc:tibero:thin:@10.109.133.105:1521:OMS"/>
+        <property name="username" value="CCSOMSWAS"/>
+        <property name="password" value="1!wndrnr"/>
+        <property name="validationQuery" value="select 1 from dual"/> 
+        <property name="testWhileIdle" value="true"/> 
+        <property name="timeBetweenEvictionRunsMillis" value="300000"/>
+    </bean>
+    
+    <!-- 第二个数据源配置 --> 
+     <bean id="dataSourceIMS" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.tmax.tibero.jdbc.TbDriver" />
+        <property name="url" value="jdbc:tibero:thin:@10.124.253.151:1521:CCS"/>
+        <property name="username" value="tmsimswas"/>
+        <property name="password" value="gtms45!@"/>
+        <property name="validationQuery" value="select 1 from dual"/> 
+        <property name="testWhileIdle" value="true"/> 
+        <property name="timeBetweenEvictionRunsMillis" value="900000"/>
+    </bean>
+      
+</beans>

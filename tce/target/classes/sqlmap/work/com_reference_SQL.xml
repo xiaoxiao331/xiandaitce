@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : com_reference_SQL.xml
+    Description : Include Reference SQL
+
+    Modification Information 
+       수정일      수정자    Version      Query Id
+    ==========  =======  ========   ==============
+    2019.05.29  이명철   1.0         최초 생성 
+-->
+<mapper namespace="sql.ref">
+    <sql id="pagingHeader">
+        <![CDATA[
+        SELECT pagingY.* FROM ( 
+            SELECT ROWNUM NUM, pagingX.*
+            FROM (
+        ]]>
+    </sql>
+    
+    <sql id="pagingFooter">
+        <![CDATA[
+            ) pagingX
+            WHERE ROWNUM <= #{pageSize} * #{pageIndex} 
+        ) pagingY
+        WHERE NUM > (#{pageIndex} - 1) * #{pageSize}            
+        ]]>
+    </sql>
+</mapper>
+

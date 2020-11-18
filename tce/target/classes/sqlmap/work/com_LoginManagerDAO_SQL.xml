@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : tce_LoginManagerDAO_SQL.xml
+    Description : Login Manager SQL
+
+    Modification Information 
+       수정일      수정자    Version      Query Id
+    ==========  =======  ========   ==============
+    2019.04.23             1.0         최초 생성 
+-->
+<mapper namespace="tce.com.service.dao.LoginManagerDAO">
+    <!-- Select UserInfo List -->
+    <select id="selectSession" parameterType="loginManagerVO" resultType="loginManagerVO">
+        SELECT                  
+            A.USER_ID AS userId,       
+            A.USER_SID AS userSid  
+       FROM TC_MONITORING_USER_MGMT A, TC_MONITORING_AUTH_MGMT B
+       WHERE
+            A.AUTH_ID = B.AUTH_ID
+            AND A.USER_ID = #{userId}
+            AND A.USER_LOCK_YN = 'N' AND A.USER_USE_YN = 'Y'
+            
+    </select>
+    
+    <update id="updateSession" parameterType="loginManagerVO">
+        UPDATE TC_MONITORING_USER_MGMT SET
+            USER_SID = #{userSid},
+            USER_LAST_LGI_POT = sysdate
+        WHERE
+            USER_ID = #{userId}
+    </update>
+    
+    <update id="updateUserPasswd" parameterType="userVO">
+        UPDATE TC_MONITORING_USER_MGMT SET
+            USER_PW = #{userPw},
+            USER_PW_FAIL_CNT = 0,
+            USER_LOCK_YN = 'N',
+            LAST_ID = #{lastId},
+            LAST_DT = sysdate 
+        WHERE
+            USER_ID = #{userId}
+            AND A.USER_PW = #{searchUserPw}
+    </update>
+    
+</mapper>

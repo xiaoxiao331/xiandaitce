@@ -1,0 +1,110 @@
+package tce.cmm;
+
+/**
+ * <pre>
+ * 공통 상수 정의 Class
+ * </pre>
+ *
+ * @ClassName   : Constant.java
+ * @Description : 클래스 설명을 기술합니다.
+ * @author 
+ * @since 2019. 4. 23.
+ * @version 1.0
+ * @see
+ * @Modification Information
+ * <pre>
+ *     since          author              description
+ *  ===========    =============    ===========================
+ *  2019. 4. 23.                 	최초 생성
+ * </pre>
+ */
+
+public class Constant {
+    /* ************************************** 공통 관련 ************************************** */
+    public static final String MAIN_HOME                    = "/tce.do";
+    /** 시스템 명 */
+    public static final String SYSTEM_NM                    = "TCE";
+    /** 구분 : Y */
+    public static final String GUBN_Y                       = "Y";
+    /** 구분 : N */
+    public static final String GUBN_N                       = "N";
+    
+    /* ************************************** 세션 관련 ************************************** */
+    /** 세션 ID */
+    public static final String SESSION_ID                   = "ssInfo";
+    /** 세션 IP */
+    public static final String SESSION_IP                   = "ssIp";
+    
+    /* ************************************** INTERCEPTER 관련 ************************************** */
+    /** INTERCEPTER : 로그 사용여부 */
+    public final static Boolean INTERCEPTOR_LOG_YN          = true;
+    /** INTERCEPTER : INTERCEPTER 처리용 어트리뷰트 명 */
+    public static final String INTERCEPTOR_CHK_TITLE        = "VALIDATION";
+    /** INTERCEPTER : LOGIN 처리용 어트리뷰트 명 */
+    public static final String INTERCEPTOR_CHK_LOGOUT        = "LOGOUT";
+    /** INTERCEPTER : LOGIN 처리용 어트리뷰트 명 */
+    public static final String INTERCEPTOR_CHK_LOGIN        = "LOGIN";
+    /** INTERCEPTER : INTERCEPTER 처리용 어트리뷰트 값00(성공) */
+    public static final String INTERCEPTOR_CHK_VAL00        = "OK";
+    /** INTERCEPTER : INTERCEPTER 처리용 어트리뷰트 값01(에러) */
+    public static final String INTERCEPTOR_CHK_VAL01        = "ERROR";
+    
+    /** 패턴 : 로그인 */
+    public final static String[] INTERCEPTOR_TYPE_LOGIN     = {MAIN_HOME, "/com/main.do", "/com/loginForm.do", "/com/login.do", "/com/logout.do", "/com/ssoLogin.do","/com/sendSMS.do"};
+    
+    public final static String INTERCEPTOR_VALID_URLPATTERN = "Popup.do|Detail.do|Select.do|Main.do|List.do|Common.do|RegistForm.do|Regist.do|UpdateForm.do|Update.do|Delete.do|Form.do|Download.do|Upload.do|Excel.do|Release.do|Init.do|Send.do";
+    
+    /** 로그 구분 : 로그인 */
+    public static final String LOG_LOGIN                    =  "LOGIN";
+    /** 로그 구분 : 조회 */
+    public static final String LOG_SELECT                   =  "SELECT";
+    /** 로그 구분 : 등록 */
+    public static final String LOG_INSERT                   =  "INSERT";
+    /** 로그 구분 : 수정 */
+    public static final String LOG_UPDATE                   =  "UPDATE";
+    /** 로그 구분 : 삭제 */
+    public static final String LOG_DELETE                   =  "DELETE";
+    /** 로그 구분 : 엑셀 */
+    public static final String LOG_EXCEL                    =  "EXCEL";
+    /** 로그 구분 : 다운로드 */
+    public static final String LOG_DOWNLOAD                 =  "DOWNLOAD";
+    /** 로그 구분 : FORM */
+    public static final String LOG_FORM                     =  "FORM";
+    
+    /** 중복 로그인 체크 URL */
+    public final static String[] DUP_LOGIN_CHECK_URL        = {"/com/login.do", "/com/logout.do", "/tce.do", "/com/loginForm.do","/com/sendSMS.do"};
+    /** 권한 체크 예외 URL */
+    public final static String[] AUTH_EXCLUDE_URL           = {"/tce.do", "/com/loginForm.do", "/com/login.do", "/com/pwExpireForm.do", "/com/pwUpdateForm.do", "/com/pwExprUpdate.do", "/com/pwUpdate.do", "/com/logout.do", "/popup.do", "Popup.do", "/com/changeInitPwdForm.do", "/com/changeInitPwd.do","/work/pop/vehicleCodePopup.do","/work/pop/selectVehicleCdList.do","/com/sendSMS.do","/work/workRegist.do","/workor/workUpdateSave.do"};
+    
+    /* ************************************** VALIDATION 구분 관련 ************************************** */
+    /** VALIDATION 구분 : 로그인 */
+    public static final String VALIDATION_LOGIN             =  "LOGIN";
+    /** VALIDATION 구분 : 메인 */
+    public static final String VALIDATION_MAIN              =  "MAIN";
+    /** VALIDATION 구분 : 등록 */
+    public static final String VALIDATION_REGIST            =  "REGIST";
+    /** VALIDATION 구분 : 수정 */
+    public static final String VALIDATION_UPDATE            =  "UPDATE";
+    /** VALIDATION 구분 : 삭제 */
+    public static final String VALIDATION_DELETE            =  "DELETE";
+    
+    /* ************************************** 페이징 스크립트 함수 관련 ************************************** */
+    /** 페이징 함수 : 공통 */
+    public static final String PAGE_FN_COMMON               =  "gfn_goToPage";
+        
+    /**
+     * HTTP Class 
+     */
+    public class HTTP{
+        /** API CALL : Header KPME Token Key */
+        public static final String HEADER_KPME_ACESS_TOKEN = "X-Keystone-Admin-Token";
+        public static final String HEADER_DATE             = "Date";
+        public static final String HEADER_FROM             = "From";
+        public static final String HEADER_TID              = "Tid";
+        public static final String HEADER_VIN              = "Vib";
+        public static final String HEADER_NADID            = "NADID";
+        public static final String HEADER_TO               = "To";
+        public static final String HEADER_TELECOM          = "Telecom";
+        public static final String HEADER_CONTENT_TYPE     = "Content-Type";
+    }
+}

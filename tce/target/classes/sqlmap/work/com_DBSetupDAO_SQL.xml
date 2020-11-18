@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : tce_DBSetupDAO_SQL.xml
+    Description : 시스템 초기 설치시 기본적인 테이블 생성관련 Query
+
+    Modification Information 
+       수정일      수정자    Version      Query Id
+    ==========  =======  ========   ==============
+    2019.06.14  송성훈   1.0         최초 생성 
+-->
+<mapper namespace="tce.com.service.dao.DBSetupDAO">
+    <select id="checkDatabase" resultType="authVO">
+        SELECT * FROM TC_MONITORING_AUTH_MGMT
+    </select>
+    
+    <insert id="setupDatabase" parameterType="String">
+        #{str}
+    </insert>
+</mapper>
+
