@@ -52,7 +52,8 @@ clickui-row{
                         </li>
                         <li> 
                             <div class="btn_div">
-                                <a href="#"  class="btn btn-primary" onclick="goSearch();" id="btnSearch" name="btnSearch"><spring:message code="btn.search"/></a>
+                                <%-- <a href="#"  class="btn btn-primary" onclick="goSearch();" id="btnSearch" name="btnSearch"><spring:message code="btn.search"/></a> --%>
+                            	<span onclick="goSearch();" class="btnsch"><span><spring:message code="btn.search"/></span></span>
                             </div>
                        </li>
                    </ul>  

@@ -176,7 +176,9 @@ function doubleSubmitCheck(){
                                         <td colspan="2">
                                             <div class="input-group">
                                                 <input type="text" class="form-control" style="width: 150px" name="worPerson" id="worPerson" value="" readonly="readonly">
-                                                <a href="#" class="btn btn-primary" name="btnvehicleSearch" id="btnvehicleSearch" onclick="fn_searchTakeUser();"><spring:message code="lbl.cartake.search"/></a>
+                                                <a href="#" class="btn btn-primary" name="btnvehicleSearch" style="margin-top: 6px;" id="btnvehicleSearch" onclick="fn_searchTakeUser();">
+                                                	<spring:message code="lbl.cartake.search"/>
+                                                </a>
                                             </div>  
                                         </td>
                                      	<th><span class="require">*</span><spring:message code="lbl.work.progress"/></th>

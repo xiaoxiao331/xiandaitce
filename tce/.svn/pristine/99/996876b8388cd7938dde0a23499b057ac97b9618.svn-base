@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : tce_CodeDAO_SQL.xml
+    Description : Login Manager SQL
+
+    Modification Information 
+       수정일      수정자    Version      Query Id
+    ==========  =======  ========   ==============
+    2019.05.23             1.0         최초 생성 
+-->
+<mapper namespace="tce.setting.service.dao.CodeDAO">
+    <!-- Select Group Code List -->
+    <select id="selectGroupCodeList" parameterType="codeVO" resultType="codeVO">
+        SELECT GROUP_CODE_ID    AS groupCodeId
+             , GROUP_CODE_NM    AS groupCodeNm
+             , DESCRIPTION      AS description
+             , MSG_ID           AS msgId
+             , USE_YN           AS useYn
+          FROM TC_MONITORING_GROUP_CODE
+         WHERE 1=1
+        <if test="searchVal01 != null and searchVal01 != ''">
+           AND GROUP_CODE_NM LIKE '%'||#{searchVal01}||'%'
+        </if>
+         ORDER BY FRST_DT DESC
+    </select>
+    
+    <!-- Insert Group Code -->
+    <insert id="insertGroupCodeInfo" parameterType="codeVO">
+        INSERT INTO TC_MONITORING_GROUP_CODE (
+            GROUP_CODE_ID,
+            GROUP_CODE_NM,
+            DESCRIPTION,
+            MSG_ID,
+            USE_YN,
+            FRST_ID,
+            FRST_DT
+        ) 
+        VALUES (
+            #{groupCodeId},
+            #{groupCodeNm},
+            #{description},
+            #{msgId},
+            #{useYn},
+            #{frstId},
+            sysdate 
+        )
+    </insert>
+    
+    <!-- Select Group Code -->
+    <select id="selectGroupCodeInfo" parameterType="codeVO" resultType="codeVO">
+        SELECT GROUP_CODE_ID  AS groupCodeId          
+             , GROUP_CODE_NM  AS groupCodeNm 
+             , DESCRIPTION    AS description           
+             , MSG_ID         AS msgId     
+             , USE_YN         AS useYn                
+          FROM TC_MONITORING_GROUP_CODE
+         WHERE GROUP_CODE_ID = #{groupCodeId}
+    </select>
+    
+    <!-- Update Group Code -->
+    <update id="updateGroupCodeInfo" parameterType="codeVO" >
+        UPDATE TC_MONITORING_GROUP_CODE 
+           SET GROUP_CODE_NM = #{groupCodeNm}
+             , DESCRIPTION   = #{description}
+             , MSG_ID        = #{msgId}
+             , USE_YN        = #{useYn}
+             , LAST_ID       = #{lastId}
+             , LAST_DT       = SYSDATE
+         WHERE GROUP_CODE_ID = #{groupCodeId}
+    </update>
+    
+    <!-- Select Group Code List -->
+    <select id="selectDetailCodeList" parameterType="codeVO" resultType="codeVO">
+        SELECT CODE_ID       AS codeId
+             , GROUP_CODE_ID AS groupCodeId
+             , CODE_NM       AS codeNm
+             , CODE_SORT_NO  AS codeSortNo
+             , USE_YN        AS useYn
+             , MSG_ID        AS msgId
+          FROM TC_MONITORING_CODE
+         WHERE GROUP_CODE_ID = #{groupCodeId}
+         ORDER BY CODE_SORT_NO ASC
+    </select>
+    
+    <!-- Insert Detail Code -->
+    <insert id="insertDetailCodeInfo" parameterType="codeVO">
+        INSERT INTO TC_MONITORING_CODE (
+            CODE_ID,
+            GROUP_CODE_ID,
+            CODE_NM,
+            CODE_SORT_NO,
+            DESCRIPTION,
+            MSG_ID,
+            USE_YN,
+            FRST_ID,
+            FRST_DT
+        ) 
+        VALUES (
+            #{codeId},
+            #{groupCodeId},
+            #{codeNm},
+            #{codeSortNo},
+            #{description},
+            #{msgId},
+            #{useYn},
+            #{frstId},
+            sysdate 
+        )
+    </insert>
+    
+    <!-- Select Detail Code -->
+    <select id="selectDetailCodeInfo" parameterType="codeVO" resultType="codeVO">
+        SELECT CODE_ID        AS codeId
+             , GROUP_CODE_ID  AS groupCodeId          
+             , CODE_NM        AS codeNm
+             , CODE_SORT_NO   AS codeSortNo
+             , DESCRIPTION    AS description           
+             , MSG_ID         AS msgId     
+             , USE_YN         AS useYn                
+          FROM TC_MONITORING_CODE
+         WHERE GROUP_CODE_ID = #{groupCodeId}
+           AND CODE_ID       = #{codeId}
+    </select>
+    
+    <!-- Update Detail Code -->
+    <update id="updateDetailCodeInfo" parameterType="codeVO" >
+        UPDATE TC_MONITORING_CODE 
+           SET CODE_NM       = #{codeNm}
+             , DESCRIPTION   = #{description}
+             , MSG_ID        = #{msgId}
+             , USE_YN        = #{useYn}
+             , CODE_SORT_NO  = #{codeSortNo}
+             , LAST_ID       = #{lastId}
+             , LAST_DT       = SYSDATE
+         WHERE GROUP_CODE_ID = #{groupCodeId}
+           AND CODE_ID       = #{codeId} 
+    </update>
+</mapper>
+

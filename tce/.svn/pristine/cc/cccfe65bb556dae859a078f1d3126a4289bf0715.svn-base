@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <typeAliases>
+    	<typeAlias alias="hMap" type="able.com.vo.HMap"/>
+    	<!-- <typeAlias  alias="entryOpenVO" type="tce.ims.vo.EntryOpenVO"/> -->
+        <!--  -->
+        <typeAlias alias="carRetailInfoSearchVO"  type="tce.ims.vo.CarRetailInfoSearchVO" />
+        <typeAlias alias="carRetailInfoVO"  type="tce.ims.vo.CarRetailInfoVO" />
+        <typeAlias alias="imsEntity"  type="tce.ims.vo.IMSEntity" />
+        <typeAlias alias="imsEntityMain"  type="tce.ims.vo.IMSEntityMain" />
+
+    </typeAliases>
+</configuration>

@@ -69,7 +69,8 @@
                                 <input class="form-control" name="searchVal01" style="width: 150px;" type="text" value="${rParam.searchVal01}">
                             </li>
                             <li>
-                                <a class="btn btn-primary" href="#" id="btnSearch" type="button"><spring:message code="btn.search" /></a>
+                                <%-- <a class="btn btn-primary" href="#" id="btnSearch" type="button"><spring:message code="btn.search" /></a> --%>
+                           		<span id="btnSearch" class="btnsch"><span><spring:message code="btn.search"/></span></span>
                             </li>
                         </ul>
                     </div>

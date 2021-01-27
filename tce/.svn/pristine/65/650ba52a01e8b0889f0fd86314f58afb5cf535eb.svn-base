@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : tce_NotiMgrDAO_SQL.xml
+    Description : Login Manager SQL
+
+    Modification Information 
+       수정일      수정자    Version      Query Id
+    ==========  =======  ========   ==============
+    2019.04.23             1.0         최초 생성 
+-->
+<mapper namespace="tce.setting.service.dao.AuthMenuMapDAO">
+    <!-- Select Auth Menu List -->
+    <select id="selectAuthMenuList" parameterType="authMenuMapVO" resultType="authMenuMapVO">
+        <include refid="sql.ref.pagingHeader"/>
+        WITH MENU_TREE AS (
+            SELECT MENU_ID,
+                   MENU_LEVEL, 
+                   UPPER_MENU_ID,
+                   (SELECT MENU_NM FROM TC_MONITORING_MENU B WHERE B.MENU_ID=A.UPPER_MENU_ID) AS UPPER_MENU_NM, 
+                   SUBSTR(sys_connect_by_path(MENU_NM, '>'), 2) AS MENU_PATH,         
+                   MENU_NM,          
+                   MENU_URL,        
+                   MENU_SORT_NO,
+                   USE_YN,            
+                   DESCRIPTION,     
+                   FRST_ID,          
+                   FRST_DT,         
+                   LAST_ID,          
+                   LAST_DT
+              FROM TC_MONITORING_MENU A
+             START WITH UPPER_MENU_ID = -1
+           CONNECT BY PRIOR MENU_ID = UPPER_MENU_ID
+             ORDER SIBLINGS BY MENU_LEVEL, MENU_SORT_NO
+        )
+        SELECT B.MAP_ID         AS mapId,
+               B.AUTH_ID        AS authId, 
+               C.AUTH_NM        AS authNm,
+               MENU_PATH        AS menuPath,
+               A.UPPER_MENU_NM  AS upperMenuNm,
+               B.MENU_ID        AS menuId,
+               A.MENU_NM        AS menuNm,
+               A.MENU_URL       AS menuUrl,
+               A.MENU_LEVEL     AS menuLevel,
+               B.USE_YN         AS useYn,
+               A.MENU_SORT_NO   AS menuSortNo
+          FROM TC_MONITORING_AUTH_MENU_MAP B, TC_MONITORING_AUTH_MGMT C, MENU_TREE A
+          <if test="userId != null and userId != ''">
+             , BT_NTC_USER_MGMT U
+          </if>  
+         WHERE B.AUTH_ID = C.AUTH_ID 
+           AND B.MENU_ID = A.MENU_ID 
+          <if test="userId != null and userId != ''">
+           AND C.AUTH_ID = U.AUTH_ID
+           AND U.USER_ID = #{userId}
+          </if>
+          <if test="searchVal01 != null and searchVal01 != ''">
+           AND C.AUTH_ID = #{searchVal01}
+          </if>
+         ORDER BY authNm, menuPath
+        <include refid="sql.ref.pagingFooter"/>
+    </select>
+    
+    <!-- Select Auth Menu List Count-->
+    <select id="selectAuthMenuListCnt" parameterType="authMenuMapVO" resultType="Integer">
+        SELECT COUNT(*) AS CNT FROM(
+            WITH MENU_TREE AS (
+                SELECT MENU_ID
+                  FROM TC_MONITORING_MENU A
+            )
+            SELECT B.MAP_ID AS mapId
+              FROM TC_MONITORING_AUTH_MENU_MAP B, TC_MONITORING_AUTH_MGMT C, MENU_TREE A
+              <if test="userId != null and userId != ''">
+                 , BT_NTC_USER_MGMT U
+              </if>  
+             WHERE B.AUTH_ID = C.AUTH_ID 
+               AND B.MENU_ID = A.MENU_ID 
+              <if test="userId != null and userId != ''">
+               AND C.AUTH_ID = U.AUTH_ID
+               AND U.USER_ID = #{userId}
+              </if>
+              <if test="searchVal01 != null and searchVal01 != ''">
+               AND C.AUTH_ID = #{searchVal01}
+              </if>
+         )
+    </select>
+    
+    <!-- Update Menu Auth Info -->
+    <update id="updateAuthMenuInfo" parameterType="authMenuMapVO">
+        UPDATE TC_MONITORING_AUTH_MENU_MAP 
+           SET USE_YN = #{useYn}
+             , LAST_ID = #{lastId}
+             , LAST_DT = sysdate 
+         WHERE MAP_ID IN 
+        <foreach item="item" index="index" collection="mapIdList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    
+    <!-- Insert Auth User Mapping -->
+    <insert id="insertAuthMenuMapFromMenu" parameterType="authMenuMapVO">
+        INSERT INTO TC_MONITORING_AUTH_MENU_MAP (
+            MAP_ID,
+            AUTH_ID,
+            UPPER_MENU_ID,
+            MENU_ID,
+            USE_YN,
+            FRST_ID,
+            FRST_DT 
+        ) 
+        SELECT TC_MONITORING_AUTH_MENU_MAP_SEQ.nextval,
+               AUTH_ID,
+               <if test="upperMenuId == null or upperMenuId = ''">
+               null,
+               </if>
+               <if test="upperMenuId != null and upperMenuId != ''">
+               #{upperMenuId},
+               </if>
+               #{menuId},
+               'N',
+               #{frstId},
+               SYSDATE
+          FROM TC_MONITORING_AUTH_MGMT 
+    </insert>
+    
+    <!-- Insert Auth Menu User Mapping -->
+    <insert id="insertAuthMenuMapFromAuth" parameterType="authMenuMapVO">
+        INSERT INTO TC_MONITORING_AUTH_MENU_MAP (
+            MAP_ID,
+            AUTH_ID,
+            UPPER_MENU_ID,
+            MENU_ID,
+            USE_YN,
+            FRST_ID,
+            FRST_DT 
+        ) 
+        SELECT TC_MONITORING_AUTH_MENU_MAP_SEQ.nextval,
+               #{authId},
+               UPPER_MENU_ID,
+               MENU_ID,
+               'N',
+               #{frstId},
+               sysdate
+          FROM TC_MONITORING_MENU
+    </insert>
+</mapper>

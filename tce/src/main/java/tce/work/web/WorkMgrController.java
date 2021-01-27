@@ -40,11 +40,20 @@ public class WorkMgrController extends HController {
     @Autowired
     private ExamineMgrService examineMgrService;
     
+    @RequestMapping(value = "/work/workMainPage.do")
+    public String workMainPage(HttpServletRequest request) throws Exception {
+        return "/work/workMain";
+    }
     @RequestMapping(value = "/work/workMain.do")
-    public String workMain(HttpServletRequest request, @ModelAttribute("workMgrVO") WorkMgrVO workMgrVO, Model model) throws Exception {
+    public String workMain(HttpServletRequest request, @ModelAttribute("workMgrVO") WorkMgrVO workMgrVO,
+    		@ModelAttribute("userVO") UserVO userVO, Model model) throws Exception {
         //세션 정보에서 현재 접속 사용자 ID를 가져온다.
         SessionVO svo = (SessionVO)request.getSession().getAttribute(Constant.SESSION_ID);
-        
+        userVO.setUserPw("");
+        userVO.setUserId("");
+        userVO.setPageSize("99999");
+        List<UserVO> userList = userService.selectUserList(userVO);
+
         if(workMgrVO.getCurrPage() == null || workMgrVO.getCurrPage().equals("")){
         	workMgrVO.setCurrPage("1");
         }           
@@ -58,9 +67,11 @@ public class WorkMgrController extends HController {
         workMgrVO.setLimit(limit);
         
         List<WorkMgrVO> workMainList = this.workMgrService.selectWorkMainList(workMgrVO);
-
+    	
+    	model.addAttribute("resultcdListPro", userList);
        // 페이징 정보
         int listCount = workMgrService.selectWorkListCount(workMgrVO);
+        
         model.addAttribute("resultList", workMainList);
         model.addAttribute("currPage", Integer.parseInt(workMgrVO.getCurrPage()));
         model.addAttribute("totalRecordCount",listCount);

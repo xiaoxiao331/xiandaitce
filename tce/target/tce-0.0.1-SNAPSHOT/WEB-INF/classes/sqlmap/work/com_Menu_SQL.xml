@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : tce_NotiMgrDAO_SQL.xml
+    Description : Login Manager SQL
+
+    Modification Information 
+       수정일      수정자    Version      Query Id
+    ==========  =======  ========   ==============
+    2019.04.23             1.0         최초 생성 
+-->
+<mapper namespace="tce.setting.service.dao.MenuDAO">
+    <!-- Select Menu Info List -->
+    <select id="selectMenuList" parameterType="menuVO" resultType="menuVO">
+        <include refid="sql.ref.pagingHeader"/>
+        SELECT MENU_ID          AS menuId,  
+               MENU_CODE        AS menuCode,
+               MENU_LEVEL       AS menuLevel,            
+               UPPER_MENU_ID    AS upperMenuId, 
+               SUBSTR(sys_connect_by_path(MENU_NM, '>'), 2) AS upperMenuNm,          
+               MENU_NM          AS menuNm,     
+               MSG_ID           AS msgId,         
+               MENU_URL         AS menuUrl,            
+               MENU_SORT_NO     AS menuSortNo,     
+               USE_YN           AS useYn,                
+               DESCRIPTION      AS description,         
+               FRST_ID          AS frstId,              
+               FRST_DT          AS frstDt,              
+               LAST_ID          AS lastId,              
+               LAST_DT          AS lastDt    
+          FROM TC_MONITORING_MENU A
+         WHERE 1 = 1
+        <if test="searchVal01 != null and searchVal01 != ''">
+           AND MENU_NM like '%'||#{searchVal01}||'%'
+        </if>
+         START WITH UPPER_MENU_ID = -1
+       CONNECT BY PRIOR MENU_ID = UPPER_MENU_ID
+         ORDER SIBLINGS BY MENU_LEVEL, MENU_LEVEL,MENU_SORT_NO
+        <include refid="sql.ref.pagingFooter"/>
+    </select>
+    
+    <!-- Select Menu Info List Count -->
+    <select id="selectMenuListCnt" parameterType="menuVO" resultType="Integer">
+        SELECT COUNT(*) AS CNT    
+          FROM TC_MONITORING_MENU A
+         WHERE 1 = 1
+        <if test="searchVal01 != null and searchVal01 != ''">
+           AND MENU_NM like '%'||#{searchVal01}||'%'
+        </if>
+    </select>
+    
+    <!-- Select Menu Upper List -->
+    <select id="selectMenuUpperList" parameterType="menuVO" resultType="menuVO">
+        SELECT MENU_ID          AS menuId,  
+               MENU_CODE        AS menuCode, 
+               MENU_LEVEL       AS menuLevel,            
+               UPPER_MENU_ID    AS upperMenuId, 
+               (SELECT MENU_NM FROM TC_MONITORING_MENU B WHERE B.MENU_ID=A.UPPER_MENU_ID) AS UPPER_MENU_NM,   
+               SUBSTR(sys_connect_by_path(MENU_NM, '>'), 2) AS menuNm,      
+               MSG_ID           AS msgId,       
+               MENU_URL         AS menuUrl,            
+               MENU_SORT_NO     AS menuSortNo,     
+               USE_YN           AS useYn,                
+               DESCRIPTION      AS description,         
+               FRST_ID          AS frstId,              
+               FRST_DT          AS frstDt,              
+               LAST_ID          AS lastId,              
+               LAST_DT          AS lastDt    
+          FROM TC_MONITORING_MENU A
+         WHERE 1 = 1
+         START WITH UPPER_MENU_ID = -1
+       CONNECT BY PRIOR MENU_ID = UPPER_MENU_ID
+         ORDER SIBLINGS BY MENU_LEVEL, MENU_LEVEL,MENU_SORT_NO
+    </select>
+    
+    <!-- Insert Menu Info -->
+    <insert id="insertMenuInfo" parameterType="menuVO">
+        <selectKey keyProperty="menuId" resultType="Integer" order="BEFORE">
+            SELECT TC_MONITORING_MENU_SEQ.nextval FROM DUAL
+        </selectKey>
+        INSERT INTO TC_MONITORING_MENU (
+            MENU_ID,
+            MENU_CODE,
+            MENU_LEVEL,
+            UPPER_MENU_ID,
+            MENU_NM,
+            MSG_ID,
+            MENU_URL,
+            MENU_SORT_NO,
+            USE_YN,
+            DESCRIPTION,
+            FRST_ID,
+            FRST_DT
+        )
+        VALUES (
+            #{menuId},
+            #{menuCode},
+            #{menuLevel},
+            #{upperMenuId},
+            #{menuNm},
+            #{msgId},
+            #{menuUrl},
+            #{menuSortNo},
+            #{useYn},
+            #{description},
+            #{frstId},
+            sysdate 
+        )
+    </insert>
+    
+    <!-- Select Menu Info -->
+    <select id="selectMenuInfo" parameterType="menuVO" resultType="menuVO">
+       SELECT MENU_ID           AS menuId,
+              MENU_CODE         AS menuCode,  
+              MENU_LEVEL        AS menuLevel,            
+              UPPER_MENU_ID     AS upperMenuId, 
+              (SELECT MENU_NM FROM TC_MONITORING_MENU B WHERE B.MENU_ID=A.UPPER_MENU_ID) AS UPPER_MENU_NM,          
+              MENU_NM           AS menuNm,  
+              MSG_ID            AS msgId,            
+              MENU_URL          AS menuUrl,            
+              MENU_SORT_NO      AS menuSortNo,     
+              USE_YN            AS useYn,                
+              DESCRIPTION       AS description,         
+              FRST_ID           AS frstId,              
+              FRST_DT           AS frstDt,              
+              LAST_ID           AS lastId,              
+              LAST_DT           AS lastDt    
+         FROM TC_MONITORING_MENU A
+        WHERE MENU_ID = #{menuId}
+    </select>
+    
+    <!-- Menu Info Update -->
+    <update id="updateMenuInfo" parameterType="menuVO" >
+        UPDATE TC_MONITORING_MENU 
+           SET MENU_LEVEL    = #{menuLevel}
+             , MENU_CODE     = #{menuCode}
+             , UPPER_MENU_ID = #{upperMenuId}
+             , MENU_NM       = #{menuNm}
+             , MSG_ID        = #{msgId}
+             , MENU_URL      = #{menuUrl}
+             , MENU_SORT_NO  = #{menuSortNo}
+             , USE_YN        = #{useYn}
+             , DESCRIPTION   = #{description}
+             , LAST_ID       = #{lastId}
+             , LAST_DT       = sysdate 
+         WHERE MENU_ID = #{menuId}
+    </update>
+    
+    <!-- Menu Info Delete -->
+    <delete id="deleteMenuInfo" parameterType="menuVO">
+        DELETE FROM TC_MONITORING_MENU 
+         WHERE 1 = 1
+        <if test="menuId != null and menuId != ''">
+           AND MENU_ID = #{menuId}
+        </if>
+    </delete>
+    
+    <select id="selectUserAuthMenu" parameterType="menuVO" resultType="menuVO">
+        WITH USER_MENU AS (
+            SELECT C.MENU_ID,
+                   C.MENU_LEVEL, 
+                   C.MENU_CODE,         
+                   C.UPPER_MENU_ID,
+                   C.MENU_NM,   
+                   C.MSG_ID,       
+                   C.MENU_URL,    
+                   C.MENU_SORT_NO,  
+                   C.USE_YN,              
+                   C.DESCRIPTION,         
+                   C.FRST_ID,             
+                   C.FRST_DT,             
+                   C.LAST_ID,             
+                   C.LAST_DT
+              FROM TC_MONITORING_USER_MGMT A, TC_MONITORING_AUTH_MENU_MAP B, TC_MONITORING_MENU C
+             WHERE A.USER_ID = #{userId} 
+               AND A.AUTH_ID = B.AUTH_ID 
+                <if test="useYn != null and useYn != ''">
+                AND B.USE_YN = #{useYn}
+                </if>
+                AND C.USE_YN = 'Y'
+                AND B.MENU_ID = C.MENU_ID
+        )
+        SELECT MENU_ID       AS menuId,  
+               MENU_LEVEL    AS menuLevel,     
+               MENU_CODE     AS menuCode,       
+               UPPER_MENU_ID AS upperMenuId, 
+               MENU_NM       AS menuNm,   
+               USE_YN        AS useYn,    
+               MSG_ID        AS msgId,     
+               MENU_URL      AS menuUrl,            
+               MENU_SORT_NO  AS menuSortNo   
+          FROM USER_MENU A
+         START WITH UPPER_MENU_ID = -1
+       CONNECT BY PRIOR MENU_ID = UPPER_MENU_ID
+         ORDER SIBLINGS BY MENU_LEVEL, MENU_SORT_NO
+    </select>
+</mapper>
+

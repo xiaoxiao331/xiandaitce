@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+ 工单
+-->
+  <mapper namespace="tce.work.service.dao.ExamineMgrMapper"> 
+    	<resultMap type="tce.work.vo.ExamineMgrVO" id="examineMgrVO" >
+	        <result property="exaId" column="EXA_ID"/>
+            <result property="exaTakeuser" column="EXA_TAKEUSER"/>
+	        <result property="exaDisposeContent" column="EXA_DISPOSE_CONTENT"/>
+	        <result property="exaSaveData" column="EXA_SAVEDATA"/>
+	        <result property="exaDisposeData" column="EXA_DISPOSEDATA"/>
+	        <result property="exaExtend" column="EXA_EXTEND1"/>
+	        <result property="exaExtend1" column="EXA_EXTEND2"/>
+	        <result property="exaResult" column="EXA_RESULT"/> 
+    	</resultMap>
+  <!-- 
+        查询  
+     -->
+   <select id="selectExamineList" parameterType="tce.work.vo.ExamineMgrVO" resultType="hMap"> 
+    <![CDATA[
+        SELECT /* Query ID=tce.work.service.dao.ExamineMgrMapper.selectExamineList */
+             	EXA_ID
+              , EXA_TAKEUSER
+              , EXA_DISPOSE_CONTENT
+              , to_char(EXA_SAVEDATA, 'yyyy-mm-dd HH24:MI:SS') as EXA_SAVEDATA
+              , to_char(EXA_DISPOSEDATA, 'yyyy-mm-dd HH24:MI:SS') as EXA_DISPOSEDATA
+              , DECODE(EXA_RESULT, 'A', '接收', 'B', '处理中', 'C', '处理完成', 'D', '结束',' ') AS worResult
+        FROM TC_MONITORING_RESULT_EXAMINE
+        WHERE 1=1 
+        AND EXA_ID = #{exaId}
+        ORDER BY EXA_SAVEDATA DESC
+    ]]>         
+    </select>
+    
+    <!-- 删除 -->
+    <delete id="deleteExamineMain" parameterType="tce.work.vo.ExamineMgrVO">
+    	<![CDATA[
+        DELETE FROM TC_MONITORING_RESULT_EXAMINE     /* Query ID=tce.work.service.dao.ExamineMgrMapper.deleteExamineMain */
+        WHERE 1=1
+        AND EXA_ID = #{exaId}
+    ]]> 
+    </delete>
+</mapper>
+

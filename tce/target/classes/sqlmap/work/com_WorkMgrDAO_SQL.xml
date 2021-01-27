@@ -32,18 +32,19 @@
         SELECT * 
         FROM (
              SELECT A.WORID, A.WORCLASSIFY, A.WOREXIGENCY, A.WORTITLE, A.WORCREAUSER
-            		, A.WORPERSON, A.WORRESULT, A.WORUPDATEDATE
+            		, A.WORPERSON, A.WORRESULT, A.WORUPDATEDATE, A.WORINTHEDATE
                     , rownum as rnum, count(*) over() as totcnt
             FROM(
                  SELECT /* QueryId = tce.work.service.dao.WorkMgrMapper.selectWorkMainList */
                     A.WOR_ID AS worID
                     , DECODE(A.WOR_CLASSIFY, 'A', '运营支援', 'B', '工单异常','C', '应对障碍','D', '改善变更','E', '功能开发',' ') AS worClassify
-                    , A.WOR_EXIGENCY AS worExigency
+                    , DECODE(A.WOR_EXIGENCY, 'A', '低', 'B', '中','C', '高','D', '紧急',' ') AS worExigency 
                     , A.WOR_TITLE AS worTitle
                     , A.WOR_CREAUSER AS worCreauser
                     , A.WOR_PERSON AS worPerson
-                    , A.WOR_RESULT AS worResult
+                    , DECODE(A.WOR_RESULT, 'A', '接收', 'B', '处理中','C', '处理中','D', '结束',' ') AS worResult  
                     , to_char(A.WOR_UPDATEDATE, 'YYYY-MM-DD HH24:MI:SS') AS worUpdateDate
+                    , to_char(A.WOR_INTHEDATE, 'YYYY-MM-DD HH24:MI:SS') AS worIntheDate
                 FROM TC_MONITORING_RESULT_WORKORDER A
                 WHERE 1=1
     ]]>
@@ -62,6 +63,9 @@
                 <if test="worResult != null and worResult != ''">
                   AND WOR_RESULT = #{worResult}
                 </if> 
+                <if test="searchExigency != null and searchExigency != ''">
+                  AND WOR_EXIGENCY in (${searchExigency})
+                </if>
                 ORDER BY worID DESC
                 )A
             )
@@ -95,6 +99,9 @@
         <if test="worResult != null and worResult != ''">
           AND WOR_RESULT = #{worResult}
         </if>
+        <if test="searchExigency != null and searchExigency != ''">
+           AND WOR_EXIGENCY in (${searchExigency})
+         </if>
     </select>
     
     <!-- 新增 -->

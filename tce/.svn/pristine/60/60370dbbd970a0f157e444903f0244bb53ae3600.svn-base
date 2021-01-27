@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="tce.app.service.dao.MonitoringResultGroupMapper">
+    <!--  返回值  -->
+    <resultMap id="monitoringResultGroup" type="tce.app.vo.MonitoringResultGroup">
+        <result column="RGST_DTM" property="rgstDtm" jdbcType="VARCHAR"/>
+        <result column="SCENARIO" property="scenario" jdbcType="VARCHAR"/>
+        <result column="ALLCNT" property="allcnt" jdbcType="VARCHAR"/>
+        <result column="SUCCESS" property="success" jdbcType="VARCHAR"/>
+        <result column="FAIL_CNT" property="failCnt" jdbcType="VARCHAR"/>
+        <result column="CONTINUE" property="contiNue" jdbcType="VARCHAR"/>
+        <result column="FAILURERATE" property="failurerate" jdbcType="VARCHAR"/>
+        <result column="USER_ID" property="userId" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="BaseResultBeanMap" type="tce.app.vo.MonitoringResultGroupBean">
+        <result column="RGST_DTM" property="rgstDtm" jdbcType="VARCHAR"/>
+        <result column="SCENARIO" property="scenario" jdbcType="VARCHAR"/>
+        <result column="ALLCNT" property="allcnt" jdbcType="VARCHAR"/>
+        <result column="SUCCESS" property="success" jdbcType="VARCHAR"/>
+        <result column="FAIL_CNT" property="failCnt" jdbcType="VARCHAR"/>
+        <result column="CONTINUE" property="contiNue" jdbcType="VARCHAR"/>
+        <result column="FAILURERATE" property="failurerate" jdbcType="VARCHAR"/>
+        <result column="USER_ID" property="userId" jdbcType="VARCHAR"/>
+        <result column="MONITORINGNAME" property="monitoringname" jdbcType="VARCHAR"/>
+        <result column="SVC_CD" property="svcCd" jdbcType="VARCHAR"/>
+        <result column="ERROR_LEVEL_PERCENT" property="errorLevelPercent" jdbcType="VARCHAR"/>
+        <result column="SMS_GROUP" property="smsGroup" jdbcType="VARCHAR"/>
+        <result column="SMS_MESSAGE" property="smsMessage" jdbcType="VARCHAR"/>
+        <result column="SMS_SEND_START_TIME" property="smsSendStartTime" jdbcType="VARCHAR"/>
+        <result column="SMS_SEND_END_TIME" property="smsSendEndTime" jdbcType="VARCHAR"/>
+        <result column="SMS_SEND_YN" property="smsSendYn" jdbcType="VARCHAR"/>
+        <result column="ERROR_COLOR" property="errorColor" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--  查询列表  -->
+     <select id="queryMonitoringResultGroup" resultMap="monitoringResultGroup"> 
+           select
+		       RGST_DTM,SCENARIO,ALLCNT,SUCCESS,FAIL_CNT,CONTINUE,FAILURERATE,USER_ID
+		        <if test="monitoringFieidSearch!=null and monitoringSortSearch!=null and monitoringFieidSearch!='' and monitoringSortSearch!=''">
+		            <if test="monitoringFieidSearch != 'SCENARIO'">
+		                <if test="monitoringFieidSearch != 'FAILCNT'">
+		                    ,cast(${monitoringFieidSearch} as int) ${monitoringFieidSearch}_int
+		                </if>
+		                <if test="monitoringFieidSearch == 'FAILCNT'">
+		                    ,cast(FAIL_CNT as int) ${monitoringFieidSearch}_int
+		                </if>
+		            </if>
+		        </if>
+		        from TC_MONITORING_RESULT_GROUP_MAIN
+		        where RGST_DTM = 
+		        ( 
+		        select MAX(RGST_DTM) from TC_MONITORING_RESULT_GROUP_MAIN 
+		      
+		       WHERE to_date(RGST_DTM, 'yyyy-MM-dd HH24:mi:ss') 
+		       &lt;= to_date(#{monitoringDateSearch}, 'yyyy-MM-dd HH24:mi:ss') 
+		        )
+	        and USER_ID = 'JAVA'
+	        <if test="monitoringFieidSearch!=null and monitoringSortSearch!=null and monitoringFieidSearch!='' and monitoringSortSearch!=''">
+	            <if test="monitoringFieidSearch != 'SCENARIO'">
+	                ORDER BY ${monitoringFieidSearch}_int ${monitoringSortSearch}
+	            </if>
+	            <if test="monitoringFieidSearch == 'SCENARIO'">
+	                ORDER BY ${monitoringFieidSearch} ${monitoringSortSearch}
+	            </if>
+	        </if>
+    </select>
+	<!-- 查询失败 -->
+	 <select id="svcCdCheckErrorData" resultMap="BaseResultBeanMap">
+        SELECT *
+        FROM ( SELECT * FROM TC_MONITORING_RESULT_GROUP_MAIN
+            where RGST_DTM = ( select MAX(RGST_DTM) from TC_MONITORING_RESULT_GROUP_MAIN WHERE to_date(RGST_DTM, 'yyyy-MM-dd
+            HH24:mi:ss') &lt;= to_date(#{monitoringDateSearch}, 'yyyy-MM-dd HH24:mi:ss') )
+            and USER_ID = 'JAVA') A
+        JOIN TC_MONITORING_SVC_CD_CHECKLIST B
+            ON A.SCENARIO = B.monitoringname
+            <if test="smsSendYn != null ">
+                and B.SMS_SEND_YN = #{smsSendYn}
+            </if>
+            and cast(A.ALLCNT AS int) > 0
+            and cast(A.FAIL_CNT AS int) / cast(A.ALLCNT AS int) * 100 &gt;= cast(B.ERROR_LEVEL_PERCENT AS int)
+
+    </select>
+</mapper>

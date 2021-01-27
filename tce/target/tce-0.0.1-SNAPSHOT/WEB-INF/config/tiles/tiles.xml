@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+    <definition name="tce" template="/WEB-INF/config/tiles/layout/templateTce.jsp">
+        <put-attribute name="body"   value="/WEB-INF/jsp/com/tce.jsp" />
+    </definition>
+    
+    <!-- Only Body View  -->
+    <definition name="empty/*/*" template="/WEB-INF/config/tiles/layout/templateEmpty.jsp">
+        <put-attribute name="body"   value="/WEB-INF/jsp/{1}/{2}.jsp" />
+    </definition>
+    
+    <!-- Popup View  -->
+    <definition name="popup/*/*" template="/WEB-INF/config/tiles/layout/templatePopup.jsp">
+        <put-attribute name="body"   value="/WEB-INF/jsp/{1}/{2}.jsp" />
+    </definition>
+    
+    <!-- Total View  -->
+    <definition name="/*/*" template="/WEB-INF/config/tiles/layout/templateTotal.jsp">
+        <put-attribute name="header" value="/WEB-INF/config/tiles/layout/header.jsp" />
+        <put-attribute name="body"   value="/WEB-INF/jsp/{1}/{2}.jsp"                />
+    </definition>
+</tiles-definitions>
+

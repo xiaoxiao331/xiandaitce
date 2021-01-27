@@ -40,7 +40,7 @@ function propertiesChk()
     }
     if($("#userId").val() != $("#worCreauser").val()){
     	$("#btnupdateworkUpdatetwo").attr("style","display:none;");
-    }
+    } 
     $(".ui-datepicker-trigger").prop("disabled", true);
 }
 
@@ -153,7 +153,8 @@ function outHide() {}
                     <input type="hidden" name="exaId" value="" id="exaId"/>
                     <input type="hidden" name="pageGbn" value="" id="pageGbn"/>
                     <input type="hidden" name="userId" id="userId" value="${userId}"/>
-                    <input type="hidden" name=worCreauser id="worCreauser" value="${workMgrVO.worCreauser}" />
+                   <%--  <input type="hidden" name=worPerson id="worPerson" value="${workMgrVO.worPerson}" /> --%>
+                    <input type="hidden" name="worCreauser" id="worCreauser" value="${workMgrVO.worCreauser}" />
                     <input type="hidden" name=userAuthid id="userAuthid" value="${userAuthid}" />
 				<div class="row">
 					<div class="board-top">
@@ -224,7 +225,7 @@ function outHide() {}
 										   <td colspan="2">
 											   <div class="input-group">
 												   <input type="text" class="form-control" style="width: 150px" name="worPerson" id="worPerson" value="${workMgrVO.worPerson}" readonly="readonly"/>
-											   		<a href="#" class="btn btn-primary" onclick="fn_searchTakeUser();"><spring:message code="lbl.cartake.search"/></a>
+											   		<a href="#" class="btn btn-primary" style="margin-top: 6px;" onclick="fn_searchTakeUser();"><spring:message code="lbl.cartake.search"/></a>
 											   </div>  
 										   </td>
 											<th><spring:message code="lbl.work.progress"/></th>

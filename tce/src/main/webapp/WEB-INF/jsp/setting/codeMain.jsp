@@ -154,7 +154,8 @@
                             <input id="searchGroupVal" class="form-control" style="width: 200px;" size="20" />
                         </li>
                         <li>
-                            <a class="btn btn-primary" href="#" id="btnSearch" type="button">Search</a>
+                            <!-- <a class="btn btn-primary" href="#" id="btnSearch" type="button">Search</a> -->
+                        	<span id="btnSearch" class="btnsch"><span><spring:message code="btn.search"/></span></span>
                         </li>
                     </ul>
                 </div>

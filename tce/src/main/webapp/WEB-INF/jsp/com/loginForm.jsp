@@ -147,9 +147,15 @@
 <!-- appscan -->
 <style type="text/css">
 #login {
-    width: 450px;
+    /* width: 450px;
     height: 100px;
-    margin: 126px auto;
+    margin: 126px auto; */
+    
+    padding-right: 30px;
+    margin-right: 20px;
+    width: 602px;
+    padding-left: 30px;
+    
 }
 
 #btn {

@@ -125,7 +125,8 @@
                                 </select>
                             </li>
                             <li>
-                                <a class="btn btn-primary" href="#" id="btnSearch" type="button"><spring:message code="btn.search"/></a>
+                                <%-- <a class="btn btn-primary" href="#" id="btnSearch" type="button"><spring:message code="btn.search"/></a> --%>
+                            	<span id="btnSearch" class="btnsch"><span><spring:message code="btn.search"/></span></span>
                             </li>
                         </ul>
                     </div>

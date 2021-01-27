@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : tce_NotiMgrDAO_SQL.xml
+    Description : Login Manager SQL
+
+    Modification Information 
+       수정일      수정자    Version      Query Id
+    ==========  =======  ========   ==============
+    2019.04.23             1.0         최초 생성 
+-->
+<mapper namespace="tce.setting.service.dao.AuthDAO">
+    <!-- Select Auth List -->
+    <select id="selectAuthList" parameterType="authVO" resultType="authVO">
+        <include refid="sql.ref.pagingHeader"/>
+        SELECT AUTH_ID      AS authId,
+               AUTH_NM      AS authNm,    
+               AUTH_USE_YN  AS authUseYn,           
+               FRST_ID      AS frstId,              
+               FRST_DT      AS frstDt,              
+               LAST_ID      AS lastId,              
+               LAST_DT      AS lastDt   
+          FROM TC_MONITORING_AUTH_MGMT
+         WHERE 1 = 1
+         <if test="searchVal01 != null and searchVal01 != ''">
+           AND AUTH_NM like '%'||#{searchVal01}||'%'
+         </if>
+         ORDER BY AUTH_NM
+         <include refid="sql.ref.pagingFooter"/>
+    </select>
+    
+    <!-- Select Menu Info List Count -->
+    <select id="selectAuthListCnt" parameterType="menuVO" resultType="Integer">
+        SELECT COUNT(*) AS CNT   
+          FROM TC_MONITORING_AUTH_MGMT
+         WHERE 1 = 1
+         <if test="searchVal01 != null and searchVal01 != ''">
+           AND AUTH_NM like '%'||#{searchVal01}||'%'
+         </if>
+    </select>
+    
+    <!-- Select Auth List -->
+    <select id="selectAuthCodeList" parameterType="authVO" resultType="authVO">
+        SELECT AUTH_ID      AS authId,
+               AUTH_NM      AS authNm,    
+               AUTH_USE_YN  AS authUseYn,           
+               FRST_ID      AS frstId,              
+               FRST_DT      AS frstDt,              
+               LAST_ID      AS lastId,              
+               LAST_DT      AS lastDt   
+          FROM TC_MONITORING_AUTH_MGMT
+         WHERE 1 = 1
+         ORDER BY AUTH_NM
+    </select>
+    
+    <!-- Insert Auth Info -->
+    <insert id="insertAuthInfo" parameterType="authVO">
+        INSERT INTO TC_MONITORING_AUTH_MGMT (
+            AUTH_ID,
+            AUTH_NM,
+            AUTH_USE_YN,
+            FRST_ID,
+            FRST_DT
+        ) 
+        VALUES (
+            #{authId},
+            #{authNm},
+            #{authUseYn},
+            #{frstId},
+            sysdate 
+        )
+    </insert>
+    
+    <!-- Select Auth Info -->
+    <select id="selectAuthInfo" parameterType="authVO" resultType="authVO">
+        SELECT AUTH_ID      AS authId,
+               AUTH_NM      AS authNm,    
+               AUTH_USE_YN  AS authUseYn,           
+               FRST_ID      AS frstId,              
+               FRST_DT      AS frstDt,              
+               LAST_ID      AS lastId,              
+               LAST_DT      AS lastDt   
+          FROM TC_MONITORING_AUTH_MGMT
+         WHERE AUTH_ID = #{authId}
+    </select>
+    
+    <!-- Update Auth Info -->
+    <update id="updateAuthInfo" parameterType="authVO">
+        UPDATE TC_MONITORING_AUTH_MGMT 
+           SET AUTH_NM     = #{authNm}
+             , AUTH_USE_YN = #{authUseYn}
+             , LAST_ID     = #{lastId}
+             , LAST_DT     = sysdate 
+         WHERE AUTH_ID = #{authId}
+    </update>
+</mapper>
+

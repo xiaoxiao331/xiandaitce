@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+ 工单
+-->
+<mapper namespace="tce.work.service.dao.WorkMgrMapper"> 
+    	<resultMap type="tce.work.vo.WorkMgrVO" id="workMgrVO" >
+	        <result jdbcType="INTEGER" property="worId" column="WOR_ID"/>
+	        <result jdbcType="VARCHAR" property="worClassify" column="WOR_CLASSIFY"/>
+	        <result jdbcType="VARCHAR" property="worExigency" column="WOR_EXIGENCY"/>
+	        <result jdbcType="VARCHAR" property="worTitle" column="WOR_TITLE"/>
+	        <result jdbcType="VARCHAR" property="worCreauser" column="WOR_CREAUSER"/>
+	        <result jdbcType="DATE" property="worCreateDate" column="WOR_CREATEDATE"/>
+	        <result jdbcType="DATE" property="worUpdateDate" column="WOR_UPDATEDATE"/>
+	        <result jdbcType="VARCHAR" property="worPerson" column="WOR_PERSON"/>
+	        <result jdbcType="VARCHAR" property="worResult" column="WOR_RESULT"/>
+	        <result jdbcType="VARCHAR" property="worNot" column="WOR_NOT"/>
+	        <result jdbcType="INTEGER" property="worSussess" column="WOR_SUCCESS"/>
+	        <result jdbcType="DATE" property="worGeginDate" column="WOR_GEGINDATE"/>
+	        <result jdbcType="DATE" property="worIntheDate" column="WOR_INTHEDATE"/>
+	        <result jdbcType="VARCHAR" property="worRate" column="WOR_RATE"/>
+	        <result jdbcType="VARCHAR" property="worDatail" column="WOR_DATAIL"/>
+	        <result jdbcType="VARCHAR" property="worExtend1" column="WOR_EXTEND1"/>   
+	        <result jdbcType="VARCHAR" property="worExtend2" column="WOR_EXTEND2"/>
+    	</resultMap>
+     <!-- 
+        查询
+     -->
+  <!--<select id="selectWorkMainList"  resultMap="workMgrVO">-->
+   <select id="selectWorkMainList" parameterType="tce.work.vo.WorkMgrVO" resultType="hMap"> 
+    <![CDATA[
+        SELECT * 
+        FROM (
+             SELECT A.WORID, A.WORCLASSIFY, A.WOREXIGENCY, A.WORTITLE, A.WORCREAUSER
+            		, A.WORPERSON, A.WORRESULT, A.WORUPDATEDATE, A.WORINTHEDATE
+                    , rownum as rnum, count(*) over() as totcnt
+            FROM(
+                 SELECT /* QueryId = tce.work.service.dao.WorkMgrMapper.selectWorkMainList */
+                    A.WOR_ID AS worID
+                    , DECODE(A.WOR_CLASSIFY, 'A', '运营支援', 'B', '工单异常','C', '应对障碍','D', '改善变更','E', '功能开发',' ') AS worClassify
+                    , A.WOR_EXIGENCY AS worExigency
+                    , A.WOR_TITLE AS worTitle
+                    , A.WOR_CREAUSER AS worCreauser
+                    , A.WOR_PERSON AS worPerson
+                    , A.WOR_RESULT AS worResult
+                    , to_char(A.WOR_UPDATEDATE, 'YYYY-MM-DD HH24:MI:SS') AS worUpdateDate
+                    , to_char(A.WOR_INTHEDATE, 'YYYY-MM-DD HH24:MI:SS') AS worIntheDate
+                FROM TC_MONITORING_RESULT_WORKORDER A
+                WHERE 1=1
+    ]]>
+    			<if test="worPerson != null and worPerson != ''">
+                  AND WOR_PERSON = #{worPerson}
+                </if> 
+                <if test="worClassify != null and worClassify != ''">
+                  AND WOR_CLASSIFY = #{worClassify}
+                </if> 
+                <if test="searchStartDate != null and searchStartDate != ''">
+                  AND A.WOR_UPDATEDATE &gt;= TO_DATE(#{searchStartDate} || ' 00:00:00','YYYY/MM/DD HH24:MI:SS')     
+                </if>
+                <if test="searchEndDate != null and searchEndDate != ''">
+                  AND A.WOR_UPDATEDATE &lt;= TO_DATE(#{searchEndDate} || ' 23:59:59','YYYY/MM/DD HH24:MI:SS')
+                </if>
+                <if test="worResult != null and worResult != ''">
+                  AND WOR_RESULT = #{worResult}
+                </if> 
+                <if test="searchExigency != null and searchExigency != ''">
+                  AND WOR_EXIGENCY in (${searchExigency})
+                </if>
+                ORDER BY worID DESC
+                )A
+            )
+        where rnum between #{offset} and #{limit} 
+    </select>
+     
+    
+    <!-- 
+        Query ID : selectNotiListCount
+        Description : 공지사항 페이지징처리
+     -->
+    <select id="selectWorkListCount" parameterType="tce.work.vo.WorkMgrVO" resultType="Integer">
+    <![CDATA[
+        SELECT /* Query ID=tce.work.service.dao.WorkMgrMapper.selectWorkListCount */
+            COUNT(*)
+        FROM TC_MONITORING_RESULT_WORKORDER
+        WHERE  1=1
+    ]]> 
+    	<if test="worPerson != null and worPerson != ''">
+             AND WOR_PERSON = #{worPerson}
+        </if>
+        <if test="worClassify != null and worClassify != ''">
+          AND WOR_CLASSIFY = #{worClassify}
+        </if> 
+        <if test="searchStartDate != null and searchStartDate != ''">
+          AND WOR_UPDATEDATE &gt;= TO_DATE(#{searchStartDate} || ' 00:00:00','YYYY/MM/DD HH24:MI:SS')     
+        </if>
+        <if test="searchEndDate != null and searchEndDate != ''">
+          AND WOR_UPDATEDATE &lt;= TO_DATE(#{searchEndDate} || ' 23:59:59','YYYY/MM/DD HH24:MI:SS')
+        </if>
+        <if test="worResult != null and worResult != ''">
+          AND WOR_RESULT = #{worResult}
+        </if>
+        <if test="searchExigency != null and searchExigency != ''">
+           AND WOR_EXIGENCY in (${searchExigency})
+         </if>
+    </select>
+    
+    <!-- 新增 -->
+     <insert id="insertWork" parameterType="tce.work.vo.WorkMgrVO" >
+   		<selectKey keyProperty="worId" resultType="Integer" order="BEFORE">
+            SELECT TC_MONITORING_RESULT_WORKORDER_SEQ.nextval FROM DUAL
+        </selectKey>
+        INSERT INTO TC_MONITORING_RESULT_WORKORDER( 
+                WOR_ID
+              , WOR_CLASSIFY
+              , WOR_EXIGENCY
+              , WOR_TITLE
+              , WOR_CREAUSER
+              , WOR_CREATEDATE
+              , WOR_UPDATEDATE
+              , WOR_PERSON
+              , WOR_RESULT
+              , WOR_NOT
+              , WOR_SUCCESS
+              , WOR_GEGINDATE
+              , WOR_INTHEDATE
+              , WOR_RATE
+              , WOR_DATAIL
+              , WOR_EXTEND1
+              , WOR_EXTEND2)
+        VALUES ( 
+              #{worId}, 
+              #{worClassify}, 
+              #{worExigency}, 
+              #{worTitle}, 
+              #{worCreauser}, 
+              sysdate, 
+              sysdate, 
+              #{worPerson}, 
+              'O' , 
+              'N' , 
+              1 , 
+              TO_DATE(#{worGeginDate}, 'YYYY-MM-DD HH24:MI:SS'), 
+              TO_DATE(#{worIntheDate}, 'YYYY-MM-DD HH24:MI:SS'), 
+              #{worRate}, 
+              #{worDatail}, 
+              'A', 
+              'A'
+              )
+    </insert>
+    
+    <!-- 
+    	查询id
+     -->
+     <select id="getWorkID" parameterType="tce.work.vo.WorkMgrVO" resultType="java.lang.Integer">
+     	<![CDATA[
+	        select /* Query ID=tce.work.service.dao.WorkMgrMapper.getWorkID */
+	            SELECT TC_MONITORING_RESULT_WORKORDER_SEQ.nextval as worId FROM DUAL
+    	]]> 
+     </select>
+     <!-- 详情 -->
+   <select id="selectWorkList" parameterType="java.lang.Integer" resultMap="workMgrVO">
+    <![CDATA[
+        SELECT /* Query ID=tce.work.service.dao.WorkMgrMapper.selectWorkList */
+             WOR_ID
+              , WOR_CLASSIFY
+              , WOR_EXIGENCY
+              , WOR_TITLE
+              , WOR_CREAUSER
+              , to_char(WOR_CREATEDATE, 'yyyy-mm-dd HH24:MI:SS') as WOR_CREATEDATE
+              , to_char(WOR_UPDATEDATE, 'yyyy-mm-dd HH24:MI:SS') as WOR_UPDATEDATE
+              , WOR_PERSON
+              , WOR_RESULT
+              , WOR_NOT
+              , WOR_SUCCESS
+              , to_char(WOR_GEGINDATE, 'yyyy-mm-dd HH24:MI:SS') as WOR_GEGINDATE 
+              , to_char(WOR_INTHEDATE, 'yyyy-mm-dd HH24:MI:SS') as WOR_INTHEDATE 
+              , WOR_RATE
+              , WOR_DATAIL
+              , WOR_EXTEND1
+              , WOR_EXTEND2
+        FROM TC_MONITORING_RESULT_WORKORDER
+        WHERE WOR_ID   = #{worId}
+    ]]>         
+    </select>
+    <insert id="updateExamine" parameterType="tce.work.vo.ExamineMgrVO">
+    	INSERT INTO TC_MONITORING_RESULT_EXAMINE( 
+              	EXA_ID ,
+				EXA_TAKEUSER ,
+				EXA_DISPOSE_CONTENT ,
+				EXA_EXTEND2 ,
+				EXA_SAVEDATA ,
+				EXA_DISPOSEDATA ,
+				EXA_EXTEND1 ,
+				EXA_RESULT )
+        VALUES ( 
+              #{exaId}, 
+              #{exaTakeuser}, 
+              #{exaDisposeContent}, 
+              'A',
+              sysdate , 
+              TO_DATE(#{exaDisposeData}, 'YYYY-MM-DD HH24:MI:SS'), 
+              'A', 
+              #{exaResult}
+              )
+    
+    </insert>
+    <!-- 修改后的查询 -->
+    <select id="selectUpdateWorkMainList" parameterType="tce.work.vo.ExamineMgrVO" resultType="hMap"> 
+    <![CDATA[
+           SELECT /* QueryId = tce.work.service.dao.WorkMgrMapper.selectUpdateWorkMainList */
+                    A.EXA_ID AS exaId
+                    , A.EXA_TAKEUSER AS exaTakeuser
+                    , A.EXA_DISPOSE_CONTENT AS exaDisposeContent
+                    , to_char(A.EXA_SAVEDATA, 'YYYY-MM-DD HH24:MI:SS') AS exaSavedate
+                    , to_char(A.EXA_DISPOSEDATA, 'YYYY-MM-DD HH24:MI:SS') AS exaDisposeData
+                    , DECODE(A.EXA_RESULT, 'A', '接收', 'B', '处理中', 'C', '处理完成','D', '结束', ' ') AS exaResult
+                FROM TC_MONITORING_RESULT_EXAMINE A
+                WHERE 1=1
+                ORDER BY exaSavedate DESC
+    ]]>
+    </select>
+    <!-- 更改主表字段 -->
+    <update id="updateWork" parameterType="tce.work.vo.WorkMgrVO">
+    	 <![CDATA[
+        UPDATE /* Query ID=tce.work.service.dao.WorkMgrMapper.updateWork */
+            TC_MONITORING_RESULT_WORKORDER
+        SET 
+            WOR_RESULT = #{worResult},
+            WOR_UPDATEDATE = TO_DATE(#{worUpdateDate}, 'YYYY-MM-DD HH24:MI:SS')
+        WHERE 1=1
+        AND WOR_ID = #{worId}
+    ]]> 
+    </update>
+    
+    <!-- 删除 -->
+    <delete id="deleteWorkMain" parameterType="tce.work.vo.WorkMgrVO">
+    	DELETE FROM TC_MONITORING_RESULT_WORKORDER     /* Query ID=tce.work.service.dao.WorkMgrMapper.deleteExamineMain */
+        WHERE 1=1
+        AND WOR_ID = #{worId}
+    </delete>
+    <!-- 更改主表字段 -->
+    <update id="updateWorkSave" parameterType="tce.work.vo.WorkMgrVO">
+    	 <![CDATA[
+        UPDATE /* Query ID=tce.work.service.dao.WorkMgrMapper.updateWorkSave */
+            TC_MONITORING_RESULT_WORKORDER
+        SET 
+            WOR_TITLE = #{worTitle},
+            WOR_DATAIL = #{worDatail},
+            WOR_CLASSIFY = #{worClassify},
+            WOR_EXIGENCY = #{worExigency},
+            WOR_GEGINDATE = TO_DATE(#{worGeginDate}, 'YYYY-MM-DD HH24:MI:SS'),
+            WOR_INTHEDATE = TO_DATE(#{worIntheDate}, 'YYYY-MM-DD HH24:MI:SS'),
+            WOR_PERSON = #{worPerson},
+            WOR_RATE = #{worRate}
+        WHERE 1=1
+        AND WOR_ID = #{worId}
+    ]]> 
+    </update>
+</mapper>
+

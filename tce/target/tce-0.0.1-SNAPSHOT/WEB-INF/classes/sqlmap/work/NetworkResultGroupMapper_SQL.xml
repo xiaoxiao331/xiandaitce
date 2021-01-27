@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="tce.app.service.dao.NetworkResultGroupMapper">
+    <!--  返回值  -->
+    <resultMap id="netCheckResultMap" type="tce.app.vo.NetworkResultGroup">
+       <result column="RGST_DTM" property="rgstDtm" jdbcType="VARCHAR" />
+		<result column="SRCSVR_NM" property="srcSvrNm" jdbcType="VARCHAR" />
+		<result column="SRCSVR_IP" property="srcSvrIp" jdbcType="VARCHAR" />
+		<result column="TGTSVR_NM" property="tgtSvrNm" jdbcType="VARCHAR" />
+		<result column="TGTSVR_IP" property="tgtSvrIp" jdbcType="VARCHAR" />
+		<result column="TGTSVR_PORT" property="tgtSvrPort" jdbcType="VARCHAR" />
+		<result column="PING_CONTENT" property="pingContent" jdbcType="VARCHAR" />
+		<result column="TELNET_CONTENT" property="telnetContent" jdbcType="VARCHAR" />
+		<result column="PING_RESULT" property="pingResult" jdbcType="VARCHAR" />
+		<result column="TELNET_RESULT" property="telnetResult" jdbcType="VARCHAR" />
+    </resultMap>
+
+  <select id="queryNetworkResultGroup" resultMap="netCheckResultMap">
+		SELECT * FROM TC_MONITORING_NET_CHECK
+		WHERE RGST_DTM = (SELECT MAX(RGST_DTM) FROM
+		TC_MONITORING_NET_CHECK
+		WHERE RGST_DTM &lt;=
+		TO_DATE(#{networkDateSearch},'YYYY-MM-DD
+		HH24:MI:SS')
+		)
+	</select>
+</mapper>

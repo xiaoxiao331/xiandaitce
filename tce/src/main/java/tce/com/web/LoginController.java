@@ -252,7 +252,7 @@ public class LoginController extends HController{
                     
                     // 로그인 성공시 이동할 페이지
                     if(viewStr.equals("")) {
-                        ModelAndView mav = new ModelAndView("forward:/work/workMain.do");
+                        ModelAndView mav = new ModelAndView("forward:/work/workMainPage.do");
                         return mav;
                     }
                 }
@@ -384,7 +384,7 @@ public class LoginController extends HController{
         if(result != null) {
             paramVO.setUserPw(newPwd);
             paramVO.setOldPasswd(oldPwd);
-            paramVO.setLastId("ADMIN");
+            paramVO.setLastId("SADMIN");
             userService.updateUserPasswd(paramVO);
         }else{
             throw new ValidationException("ERROR:Wrong information");

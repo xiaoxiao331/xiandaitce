@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <typeAliases>
+        <!-- ABLE FrameWork Common HMap -->
+		<typeAlias alias="hMap" type="able.com.vo.HMap"/>
+        
+        <!-- Common -->
+        <typeAlias alias="authMenuMapVO"  type="tce.setting.vo.AuthMenuMapVO" />
+        <typeAlias alias="authVO"         type="tce.setting.vo.AuthVO"        />
+        <typeAlias alias="menuVO"         type="tce.setting.vo.MenuVO"        />
+        <typeAlias alias="loginManagerVO" type="tce.com.vo.LoginManagerVO"    />
+        <typeAlias alias="commonVO"       type="tce.com.vo.CommonVO"          />
+        <!-- <typeAlias alias="keyMgrVO"       type="tce.setting.vo.KeyMgrVO"         /> -->
+        <!-- <typeAlias alias="custMgrVO"      type="tce.setting.vo.CustMgrVO"        /> -->
+        
+        <!-- Setting VO -->
+        <typeAlias alias="userVO"         type="tce.setting.vo.UserVO"/> 
+        <typeAlias alias="codeVO"         type="tce.setting.vo.CodeVO"        />
+        <typeAlias alias="workMgrMapper"  type="tce.work.service.dao.WorkMgrMapper"/> 
+        <typeAlias alias="examineMgrMapper"  type="tce.work.service.dao.ExamineMgrMapper"/> 
+        
+        <!-- app -->
+        <typeAlias alias="monitoringResultGroup"         type="tce.app.vo.MonitoringResultGroup"/> 
+        <typeAlias alias="networkResultGroup"         type="tce.app.vo.NetworkResultGroup"/> 
+        <typeAlias alias="serviceStatusResultRroup"         type="tce.app.vo.ServiceStatusResultRroup"/> 
+    </typeAliases>
+</configuration>
